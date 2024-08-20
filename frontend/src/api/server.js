@@ -1,6 +1,13 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
 
-const API = axios.create({ baseURL: `http://localhost:4040/api` }); 
+dotenv.config(
+    {
+        path: '.env.local'
+    }
+)
+
+const API = axios.create({ baseURL: `${process.env.BASE_URL_API_CALL}/api` }); 
 
 //auth
 export const signIn = async ({ email, password }) => await API.post('/auth/signin', { email, password });
