@@ -20,8 +20,8 @@ const app = express();
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
-        origin: "*",
-        credentials: true
+        origin: `${process.env.FRONTEND_URL}`,
+        credentials: true,
     }
 })
 
@@ -50,8 +50,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const corsConfig = {
-    origin: "*",
-    credentials: true
+    credentials: true,
+    origin: `${process.env.FRONTEND_URL}`
 }
 
 app.use(cors(corsConfig))

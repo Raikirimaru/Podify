@@ -26,7 +26,7 @@ export const NotificationIcon = () => {
 
     useEffect(() => {
         if (currentUser) {
-            const socket = io('http://localhost:4040', {
+            const socket = io(`${process.env.REACT_APP_API_URL}`, {
                 withCredentials: true,
                 query: { userId: currentUser?._id }
             })
