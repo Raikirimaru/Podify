@@ -8,7 +8,6 @@ import authRoutes from './routes/AuthRoute.js'
 import podcastsRoutes from './routes/PodcastRoute.js'
 import userRoutes from './routes/UserRoute.js'
 import subscriptionRoutes from './routes/SubRoute.js'
-import notificationRoutes from './routes/NotificationRoute.js'
 
 
 dotenv.config(
@@ -52,7 +51,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const corsConfig = {
     credentials: true,
-    origin: ["*", "http://localhost:3000"]
+    origin: ["*", `${process.env.FRONTEND_URL}`]
 }
 
 app.use(cors(corsConfig))
@@ -72,7 +71,6 @@ app.use("/api/auth", authRoutes)
 app.use("/api/podcasts", podcastsRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/subscription", subscriptionRoutes)
-app.use("/api/notifications", notificationRoutes)
 
 app.use((err, req, res, next) => {
     const status = err.status || 500;
