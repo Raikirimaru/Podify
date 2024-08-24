@@ -57,10 +57,13 @@ const corsConfig = {
 app.use(cors(corsConfig))
 
 const port = process.env.PORT || 5000
+const mongoURI = process.env.NODE_ENV === 'production' 
+    ? process.env.MONGODB_DRIVER 
+    : process.env.MONGODB_LOCAL;
 
 const connect = () => {
     mongoose.set('strictQuery', true)
-    mongoose.connect(process.env.MONGODB_LOCAL, { serverSelectionTimeoutMS: 10000 }).then(() => {
+    mongoose.connect(mongoURI, { serverSelectionTimeoutMS: 10000 }).then(() => {
         console.log(`Connected to MONGODB`)
     }).catch((err) => {
         console.log(`Error connecting ${err}`)
