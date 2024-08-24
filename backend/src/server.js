@@ -60,7 +60,7 @@ const port = process.env.PORT || 5000
 
 const connect = () => {
     mongoose.set('strictQuery', true)
-    mongoose.connect(process.env.MONGODB_DRIVER, { serverSelectionTimeoutMS: 10000 }).then(() => {
+    mongoose.connect(process.env.MONGODB_LOCAL, { serverSelectionTimeoutMS: 10000 }).then(() => {
         console.log(`Connected to MONGODB`)
     }).catch((err) => {
         console.log(`Error connecting ${err}`)

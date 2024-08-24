@@ -4,7 +4,6 @@ import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { closePlayer, openPlayer, setCurrentTime } from '../redux/audioplayerSlice';
-import { openSnackbar } from '../redux/snackbarSlice';
 import { toast } from 'sonner';
 
 const Container = styled.div`
@@ -94,7 +93,7 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
                 videoref.current.currentTime = currenttime;
             } else {
                 console.error('Invalid currenttime value:', currenttime);
-                toast.error('Invalid current time value provided')
+               // toast.error('Invalid current time value provided')
             }
         };
 
@@ -189,13 +188,8 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
                             if (isFinite(currenttime)) {
                                 videoref.current.currentTime = currenttime;
                             } else {
-                                console.error('Invalid currenttime value on play:', currenttime);
-                                dispatch(
-                                    openSnackbar({
-                                        message: 'Invalid current time value on play',
-                                        severity: 'error',
-                                    })
-                                );
+                                console.warn('Invalid currenttime value on play:', currenttime);
+                               // toast.warning('Invalid current time value on play because you are not logged in')
                             }
                         }}
                     >

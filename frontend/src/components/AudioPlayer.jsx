@@ -178,8 +178,8 @@ export const AudioPlayer = ({ episode, podid, currenttime, index }) => {
             if (audioRef.current && isFinite(currenttime)) {
                 audioRef.current.currentTime = currenttime;
             } else {
-                console.error('Invalid current time value:', currenttime);
-                toast.warning('Invalid current time value provided')
+                console.warn('Invalid current time value:', currenttime);
+              //  toast.warning('Invalid current time value provided because you are not logged in')
             }
         };
 

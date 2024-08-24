@@ -123,15 +123,6 @@ export const Search = () => {
   const handleChange = async (e) => {
     setSearchedPodcasts([]);
     setLoading(true);
-    const promise = () => new Promise((resolve) => setTimeout(() => resolve({ name: 'Entity' }), 2000));
-
-    toast.promise(promise, {
-      loading: 'Loading...',
-      success: (data) => {
-        return `${data.name} is found`;
-      },
-      error: 'Error',
-    });
     setSearched(e.target.value);
     try {
       const res = await searchPodcast(e.target.value);

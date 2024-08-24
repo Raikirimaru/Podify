@@ -354,7 +354,6 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                         console.log("Upload is paused");
                         break;
                     case "running":
-                        toast.loading('Ongoing...')
                         console.log("Upload is running");
                         break;
                     default:
