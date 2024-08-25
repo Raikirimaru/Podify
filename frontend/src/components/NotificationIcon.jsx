@@ -23,10 +23,12 @@ export const NotificationIcon = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { currentUser } = useSelector(state => state.user);
     const navigate = useNavigate();
+    const WebSocketPath = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'https://localhost:4040'
+
 
     useEffect(() => {
         if (currentUser) {
-            const socket = io(`${process.env.REACT_APP_API_URL}`, {
+            const socket = io(`${WebSocketPath}`, {
                 withCredentials: true,
                 query: { userId: currentUser?._id }
             })
@@ -42,7 +44,7 @@ export const NotificationIcon = () => {
                 socket.disconnect()
             }
         }
-    }, [currentUser]);
+    }, [WebSocketPath, currentUser]);
 
     
 

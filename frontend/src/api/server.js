@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: `${process.env.REACT_APP_API_URL}/api` }); 
+const baseURL = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'https://localhost:4040'
+
+const API = axios.create({ baseURL: `${baseURL}/api` }); 
 
 //auth
 export const signIn = async ({ email, password }) => await API.post('/auth/signin', { email, password });
