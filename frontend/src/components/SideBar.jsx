@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { openSignin } from '../redux/setSigninSlice';
 import { logout } from "../redux/userSlice";
 import { BackupTwoTone, CloseTwoTone, DarkModeTwoTone, LightModeTwoTone, FavoriteTwoTone, SearchTwoTone, LoginTwoTone, LogoutTwoTone, PodcastsTwoTone } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next'
 
 const MenuContainer = styled.div`
     flex: 0.5;
@@ -93,6 +94,7 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { currentUser } = useSelector(state => state.user);
+    const { t } = useTranslation()
     const logoutUser = () => {
         dispatch(logout());
         navigate(`/`);
@@ -114,13 +116,13 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
             <Link to='/' style={{ textDecoration: "none", color: "inherit", width: '100%' }}>
                 <Elements>
                     <PodcastsTwoTone />
-                    <NavText>Dashboard</NavText>
+                    <NavText>{t('menu.dashboard')}</NavText>
                 </Elements>
             </Link>
             <Link to='/search' style={{ textDecoration: "none", color: "inherit", width: '100%' }}>
                 <Elements>
                     <SearchTwoTone />
-                    <NavText>Search</NavText>
+                    <NavText>{t('menu.search')}</NavText>
                 </Elements>
             </Link>
             {
@@ -128,7 +130,7 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
                     <Link to='/favorites' style={{ textDecoration: "none", color: "inherit", width: '100%' }}>
                         <Elements>
                             <FavoriteTwoTone />
-                            <NavText>Favorites</NavText>
+                            <NavText>{t('menu.favorites')}</NavText>
                         </Elements>
                     </Link >
                 ) : (
@@ -139,7 +141,7 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
                     } style={{ textDecoration: "none", color: "inherit", width: '100%' }}>
                         <Elements>
                             <FavoriteTwoTone />
-                            <NavText>Favorites</NavText>
+                            <NavText>{t('menu.favorites')}</NavText>
                         </Elements>
                     </Link >
                 )
@@ -156,7 +158,7 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
             }} style={{ textDecoration: "none", color: "inherit", width: '100%' }}>
                 <Elements>
                     <BackupTwoTone />
-                    <NavText>Upload</NavText>
+                    <NavText>{t('menu.upload')}</NavText>
                 </Elements>
             </Link>
 
@@ -166,14 +168,14 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
                     <>
                         <Elements onClick={() => setDarkmode(false)}>
                             <LightModeTwoTone />
-                            <NavText>Light Mode</NavText>
+                            <NavText>{t('menu.light_mode')}</NavText>
                         </Elements>
                     </>
                     :
                     <>
                         <Elements onClick={() => setDarkmode(true)}>
                             <DarkModeTwoTone />
-                            <NavText>Dark Mode</NavText>
+                            <NavText>{t('menu.dark_mode')}</NavText>
                         </Elements>
                     </>
             }
@@ -181,16 +183,15 @@ export const SideBar = ({ menuOpen, setMenuOpen, setDarkmode, darkmode, setUploa
                 currentUser ?
                     <Elements onClick={() => logoutUser()}>
                         <LogoutTwoTone />
-                        <NavText>Log Out</NavText>
+                        <NavText>{t('menu.log_out')}</NavText>
                     </Elements>
 
                     :
                     <Elements onClick={() => dispatch(openSignin())}>
                         <LoginTwoTone />
-                        <NavText>Log In</NavText>
+                        <NavText>{t('menu.log_in')}</NavText>
                     </Elements>
             }
-
         </MenuContainer >
     )
 };

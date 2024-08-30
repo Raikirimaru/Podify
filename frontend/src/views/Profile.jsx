@@ -5,6 +5,7 @@ import Avatar from '@mui/material/Avatar';
 import { getUsers } from '../api/server.js';
 import { PodcastCard } from '../components/PodcastCard.jsx';
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProfileAvatar = styled.div`
     padding-left:3rem;
@@ -114,6 +115,7 @@ export const Profile = ({ setUploadOpen, setEpisodeUploadOpen }) => {
     const [user, setUser] = useState();
     const { currentUser } = useSelector(state => state.user);
     const [name, setName] = useState("");
+    const { t } = useTranslation()
 
     const token = localStorage.getItem("podifytoken");
 
@@ -140,24 +142,24 @@ export const Profile = ({ setUploadOpen, setEpisodeUploadOpen }) => {
                                 setEpisodeUploadOpen(true);
                             }
                         }}>
-                    Add Episode
+                    {t('uploadEpisodes.addepisode')}
                 </ButtonContainer>
             </div>
             <UserDetails>
                 <ProfileAvatar>
                     <Avatar sx={{ height: 165, width: 165 , fontSize: '24px'}} src={user?.img}>{user?.name?.charAt(0).toUpperCase()}</Avatar>
                     <Link to="/edit-profile" style={{ textDecoration: "none" }}>
-                        <EditProfileButton>Edit Profile</EditProfileButton>
+                        <EditProfileButton>{t('editProfile.modifyProfile')}</EditProfileButton>
                     </Link>
                 </ProfileAvatar>
                 <ProfileContainer>
                     <ProfileName>{name}</ProfileName>
-                    <ProfileEmail>Email: {user?.email}</ProfileEmail>
+                    <ProfileEmail>E-mail: {user?.email}</ProfileEmail>
                 </ProfileContainer>
             </UserDetails>
             {currentUser && user?.podcasts?.length > 0 &&
                 <FilterContainer box={true}>
-                    <Topic>Your Uploads</Topic>
+                    <Topic>{t('dashboard.youruploads')}</Topic>
                     <Podcasts>
                         {user?.podcasts?.map((podcast) => (
                             <PodcastCard key={podcast?._id} podcast={podcast} user={user} />
@@ -167,20 +169,20 @@ export const Profile = ({ setUploadOpen, setEpisodeUploadOpen }) => {
             }
             {currentUser && user?.podcasts?.length === 0 &&
                 <FilterContainer box={true} >
-                    <Topic>Your Uploads</Topic>
+                    <Topic>{t('dashboard.youruploads')}</Topic>
                     <Container>
                         <ButtonContainer onClick={() => {
                             if (typeof setUploadOpen === 'function' && currentUser) {
                                 setUploadOpen(true);
                             }
                         }}>
-                            Upload
+                            {t('menu.upload')}
                         </ButtonContainer>
                     </Container>
                 </FilterContainer>
             }
             <FilterContainer box={true}>
-                <Topic>Your Favorites
+                <Topic>{t('profile.your_Favorites')}
                 </Topic>
                 <Podcasts>
                     {user && user?.favorits?.map((podcast) => (

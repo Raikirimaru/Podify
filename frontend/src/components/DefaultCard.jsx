@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Card = styled.div`
-    width:150px;
+    width:200px;
     height:150px;
     border-radius:0.6rem;
     padding:1rem;

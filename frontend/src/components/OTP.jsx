@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { useTheme } from "styled-components";
 import OtpInput from 'react-otp-input';
 import CircularProgress from "@mui/material/CircularProgress";
-import { useDispatch } from 'react-redux';
 import { generateOtp, verifyOtp } from '../api/server.js';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 
 const Title = styled.div`
@@ -91,7 +91,7 @@ const Resend = styled.div`
 
 export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
     const theme = useTheme();
-
+    const { t } = useTranslation();
     const [otp, setOtp] = useState('');
     const [otpError, setOtpError] = useState('');
     const [otpLoading, setOtpLoading] = useState(false);
@@ -137,7 +137,7 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
         try {
             const res = await generateOtp(email, name, reason);
             if (res.status === 200 || res.status === 201) {
-                toast.success('OTP sent successfully')
+                toast.success(t('otp.otp_sent_success'));
                 setDisabled(true);
                 setOtp('');
                 setOtpError('');
@@ -147,16 +147,16 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
                 let errorMessage = '';
                 switch (res.status) {
                     case 400:
-                        errorMessage = 'Invalid request. Please check your input.';
+                        errorMessage = t('otp.invalid_request');
                         break;
                     case 401:
-                        errorMessage = 'Unauthorized. Please sign up and try again.';
+                        errorMessage = t('otp.unauthorized');
                         break;
                     case 404:
-                        errorMessage = 'Service not found. Please try again later.';
+                        errorMessage = t('otp.service_not_found');
                         break;
                     default:
-                        errorMessage = 'An unexpected error occurred. Please try again.';
+                        errorMessage = t('otp.unexpected_error');
                 }
                 toast.error(errorMessage)
                 setOtp('');
@@ -164,11 +164,11 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
                 setOtpLoading(false);
             }
         } catch (err) {
-            toast.error('Failed to send OTP. Please check your network connection and try again.');
-            setOtpError('Failed to send OTP. Please check your network connection and try again.');
+            toast.error(t('otp.failed_send_otp'));
+            setOtpError(t('otp.failed_send_otp'));
             setOtpLoading(false);
         }
-    }, [email, name, reason]);
+    }, [email, name, reason, t]);
     
     const resendOtp = useCallback(() => {
         setShowTimer(true);
@@ -181,7 +181,7 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
         setDisabled(true);
         verifyOtp(otp).then((res) => {
             if (res.status === 200 || res.status === 201) {
-                toast.success('OTP verified successfully');
+                toast.success(t('otp.otp_verified_success'));
                 setOtpVerified(true);
                 setOtp('');
                 setOtpError('');
@@ -191,16 +191,16 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
                 let errorMessage = '';
                 switch (res.status) {
                     case 400:
-                        errorMessage = 'Invalid OTP. Please check and try again.';
+                        errorMessage = t('otp.invalid_otp');
                         break;
                     case 401:
-                        errorMessage = 'Unauthorized. Please sign up and try again.';
+                        errorMessage = t('otp.unauthorized');
                         break;
                     case 404:
-                        errorMessage = 'Service not found. Please try again later.';
+                        errorMessage = t('otp.service_not_found');
                         break;
                     default:
-                        errorMessage = 'An unexpected error occurred. Please try again.';
+                        errorMessage = t('otp.unexpected_error');
                 }
                 toast.error(errorMessage);
                 setOtpError(errorMessage);
@@ -208,8 +208,8 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
                 setOtpLoading(false);
             }
         }).catch((err) => {
-            toast.error('Failed to validate OTP. Please check your network connection and try again.');
-            setOtpError('Failed to validate OTP. Please check your network connection and try again.');
+            toast.error(t('otp.failed_validate_otp'));
+            setOtpError(t('otp.failed_validate_otp'));
             setDisabled(false);
             setOtpLoading(false);
         });
@@ -238,12 +238,12 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
 
     return (
         <div>
-            <Title>VERIFY OTP</Title>
-            <LoginText>A verification <b>&nbsp;OTP&nbsp;</b> has been sent to: </LoginText>
+            <Title>{t('otp.verify_otp')}</Title>
+            <LoginText>{t('otp.verification_sent')} <b>&nbsp;OTP&nbsp;</b></LoginText>
             <Span>{email}</Span>
             {!otpSent ? (
                 <div style={{ padding: '12px 26px', marginBottom: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', justifyContent: 'center' }}>
-                    Sending OTP<CircularProgress color="inherit" size={20} />
+                    {t('otp.sending_otp')}<CircularProgress color="inherit" size={20} />
                 </div>
             ) : (
                 <div>
@@ -258,9 +258,9 @@ export const OTP = ({ email, name, otpVerified, setOtpVerified, reason }) => {
                     />
                     <Error error={otpError}><b>{otpError}</b></Error>
                     <OutlinedBox button={true} activeButton={!disabled} style={{ marginTop: "12px", marginBottom: "12px" }} onClick={() => validateOtp()}>
-                        {otpLoading ? <CircularProgress color="inherit" size={20} /> : "Submit"}
+                        {otpLoading ? <CircularProgress color="inherit" size={20} /> : t('otp.submit')}
                     </OutlinedBox>
-                    {showTimer ? <Timer>Resend in <b>{timer}</b></Timer> : <Resend onClick={() => resendOtp()}><b>Resend</b></Resend>}
+                    {showTimer ? <Timer>{t('otp.resend_in')} <b>{timer}</b></Timer> : <Resend onClick={() => resendOtp()}><b>{t('otp.resend')}</b></Resend>}
                 </div>
             )}
         </div>

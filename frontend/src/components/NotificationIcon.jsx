@@ -6,6 +6,7 @@ import io from 'socket.io-client'
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner';
+import { useTranslation } from "react-i18next"
 
 const NotificationIconContainer = styled.div`
     position: relative;
@@ -23,7 +24,8 @@ export const NotificationIcon = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { currentUser } = useSelector(state => state.user);
     const navigate = useNavigate();
-    const WebSocketPath = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'https://localhost:4040'
+    const { t } = useTranslation();
+    const WebSocketPath = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'http://localhost:4040'
 
 
     useEffect(() => {
@@ -37,14 +39,14 @@ export const NotificationIcon = () => {
 
             socket.on('new_episode', (notification) => {
                 setNotifications((prevNotifications) => [notification, ...prevNotifications])
-                toast.info('You have received a new notification')
+                toast.info(t('notification.new_notification'));
             })
 
             return () => {
                 socket.disconnect()
             }
         }
-    }, [WebSocketPath, currentUser]);
+    }, [WebSocketPath, currentUser, t]);
 
     
 
@@ -81,7 +83,7 @@ export const NotificationIcon = () => {
             >
                 {notifications.length === 0 ? (
                     <MenuItem onClick={handleClose}>
-                        <ListItemText primary="No notifications" />
+                        <ListItemText primary={t('notification.no_notifications')} />
                     </MenuItem>
                 ) : (
                     notifications.map((notification, index) => (

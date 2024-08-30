@@ -21,6 +21,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { closeSignin, openSignin } from "../redux/setSigninSlice";
 import googleIcon from "../Images/google.svg"
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next'
 
 
 const Container = styled.div`
@@ -158,7 +159,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
 
     const [otpSent, setOtpSent] = useState(false);
     const [otpVerified, setOtpVerified] = useState(false);
-
+    const { t } = useTranslation()
     const dispatch = useDispatch();
 
     const createAccount = useCallback(() => {
@@ -170,7 +171,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                 signUp({ name, email, password }).then((res) => {
                     if (res.status === 200) {
                         dispatch(loginSuccess(res.data));
-                        toast.success('OTP verified & Account created successfully')
+                        toast.success(t('Sign.successCreatedAccount'))
                         setLoading(false);
                         setDisabled(false);
                         setSignUpOpen(false);
@@ -179,19 +180,19 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                         let errorMessage = '';
                         switch (res.status) {
                             case 400:
-                                errorMessage = 'Invalid request. Please check your input.';
+                                errorMessage = t('otp.invalid_request')
                                 break;
                             case 401:
-                                errorMessage = 'Unauthorized. Please sign up and try again.';
+                                errorMessage = t('otp.unauthorized')
                                 break;
                             case 404: 
-                                errorMessage = 'User not found. Please sign up and try again.';
+                                errorMessage = t('Sign.userNotFound');
                                 break;
                             case 409:
-                                errorMessage = 'Email already in use. Please use a different email.';
+                                errorMessage = t('Sign.userAlreadyExists');
                                 break;
                             default:
-                                errorMessage = `An unexpected error occurred: ${res.data.message}`;
+                                errorMessage = t('otp.unexpected_error')
                         }
                         dispatch(loginFailure());
                         setcredentialError(errorMessage);
@@ -205,10 +206,10 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                 setLoading(false);
                 setDisabled(false);
                 console.error(err.message);
-                toast.error('Account creation failed')
+                toast.error(t('Sign.createAccountFailed'))
             }
         }
-    }, [dispatch, email, name, otpVerified, password, setSignUpOpen])
+    }, [dispatch, email, name, otpVerified, password, setSignUpOpen, t])
     
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -217,7 +218,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
         }
     
         if (name === "" || email === "" || password === "") {
-            toast.error('Please fill all the fields')
+            toast.error(t('Sign.Errors.emptyFields'))
         }
     };
     
@@ -226,20 +227,20 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
         if (validator.isEmail(email)) {
             setEmailError("");
         } else {
-            setEmailError("Enter a valid Email");
-            toast.error('Please enter a valid Email');
+            setEmailError(t('Sign.emailInvalid'));
+            toast.error(t('Sign.emailInvalid'))
         }
-    }, [email])
+    }, [email, t])
     
     // Validate password
     const validatePassword = useCallback(() => {
         if (password.length < 8) {
-            toast.error('Password must be at least 8 characters long!')
-            setcredentialError("Password must be at least 8 characters long!");
+            setPassword(t('Sign.passwordLengthError'));
+            toast.error(t('Sign.passwordLengthError'))
             setPasswordCorrect(false);
         } else if (password.length > 16) {
-            toast.error('Password must be less than 16 characters long!')
-            setcredentialError("Password must be less than 16 characters long!");
+            toast.error(t('Sign.passwordLengthMaxError'))
+            setcredentialError(t('Sign.passwordLengthMaxError'));
             setPasswordCorrect(false);
         } else if (
             !password.match(/[a-z]/g) ||
@@ -249,31 +250,31 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
         ) {
             setPasswordCorrect(false);
             setcredentialError(
-                "Password must contain at least one lowercase, uppercase, number and special character!"
+                t('Sign.passwordComplexityError')
             );
-            toast.error('Password must contain at least one lowercase, uppercase, number and special character!')
+            toast.error( t('Sign.passwordComplexityError'))
         } else {
             setcredentialError("");
             setPasswordCorrect(true);
         }
-    }, [password])
+    }, [password, t])
     
     // Validate name
     const validateName = useCallback(() => {
         if (name.length < 4) {
             setNameValidated(false);
             setNameCorrect(false);
-            toast.error('Name must be at least 4 characters long!')
-            setcredentialError("Name must be at least 4 characters long!");
+            toast.error(t('Sign.nameTooShort'))
+            setcredentialError(t('Sign.nameTooShort'));
         } else {
             setNameCorrect(true);
             if (!nameValidated) {
-                toast.error('Please, enter a valid name')
+                toast.error(t('Sign.emailInvalid'))
                 setcredentialError("");
                 setNameValidated(true);
             }
         }
-    }, [name.length, nameValidated])
+    }, [name.length, nameValidated, t])
     
     useEffect(() => {
         if (email !== "" || email.trim()) validateEmail();
@@ -315,19 +316,19 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                     dispatch(loginSuccess(res.data));
                     dispatch(closeSignin());
                     setSignUpOpen(false);
-                    toast.success('Logged In Successfully')
+                    toast.success(t('Sign.successLoggedIn'))
                     setLoading(false);
                 } else {
                     let errorMessage = '';
                     switch (res.status) {
                         case 400:
-                            errorMessage = 'Invalid request. Please check your input.';
+                            errorMessage = t('otp.invalid_request')
                             break;
                         case 401:
-                            errorMessage = 'Unauthorized. Please sign up and try again.';
+                            errorMessage = t('otp.unauthorized')
                             break;
                         default:
-                            errorMessage = `An unexpected error occurred: ${res.data.message}`;
+                            errorMessage = t('otp.unexpected_error')
                     }
                     dispatch(loginFailure(res.data));
                     toast.error(errorMessage)
@@ -335,13 +336,13 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                 }
             } catch (err) {
                 dispatch(loginFailure());
-                toast.error('Google login failed')
+                toast.error(t('Sign.googleLoginFailed'))
                 setLoading(false);
             }
         },
         onError: errorResponse => {
             dispatch(loginFailure());
-            toast.error('Google login error')
+            toast.error(t('Sign.googleLoginError'))
             console.error(errorResponse.error)
             setLoading(false);
         },
@@ -364,7 +365,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                     />
                     {!otpSent ?
                         <>
-                            <Title>Sign Up</Title>
+                            <Title>{t('Sign.sign_up_title')}</Title>
                             <OutlinedBox
                                 googleButton={TroubleshootRounded}
                                 style={{ margin: "24px" }}
@@ -375,13 +376,13 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                                 ) : (
                                     <>
                                         <img src={googleIcon} alt="google" width={22} />
-                                        Sign In with Google
+                                        {t('Sign.signInWithGoogle')}
                                     </>
                                 )}
                             </OutlinedBox>
                             <Divider>
                                 <Line />
-                                or
+                                {t('imgSelector.or')}
                                 <Line />
                             </Divider>
                             <OutlinedBox style={{ marginTop: "24px" }}>
@@ -390,7 +391,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                                     style={{ paddingRight: "12px" }}
                                 />
                                 <TextInput
-                                    placeholder="Full Name"
+                                    placeholder={t('Sign.fullNamePlaceholder')}
                                     type="text"
                                     onChange={(e) => setName(e.target.value)}
                                 />
@@ -401,7 +402,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                                     style={{ paddingRight: "12px" }}
                                 />
                                 <TextInput
-                                    placeholder="Email"
+                                    placeholder={t('Sign.emailPlaceholder')}
                                     type="email"
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
@@ -414,7 +415,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                                 />
                                 <TextInput
                                     type={values.showPassword ? "text" : "password"}
-                                    placeholder="password"
+                                    placeholder={t('Sign.passwordPlaceholder')}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <IconButton
@@ -440,7 +441,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                                 {Loading ? (
                                     <CircularProgress color="inherit" size={20} />
                                 ) : (
-                                    "Create Account"
+                                    t('Sign.sign_up')
                                 )}
                             </OutlinedBox>
                         </>
@@ -448,7 +449,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                         <OTP email={email} name={name} otpVerified={otpVerified} setOtpVerified={setOtpVerified} />
                     }
                     <LoginText>
-                        Already have an account ?
+                        {t('Sign.noAccount')}
                         <Span
                             onClick={() => {
                                 setSignUpOpen(false);
@@ -460,7 +461,7 @@ export const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
                                 cursor: "pointer",
                             }}
                         >
-                            Sign In
+                            {t('Sign.login')}
                         </Span>
                     </LoginText>
                 </Wrapper>

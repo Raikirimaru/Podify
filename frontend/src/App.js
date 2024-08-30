@@ -124,7 +124,7 @@ function App() {
               />
             </Routes>
           </Frame>
-          <Toaster richColors closeButton expand={false} position="bottom-center" />
+          <Toaster richColors closeButton expand={false} visibleToasts={3} position="bottom-right" />
           {open && <ToastMessage open={open} message={ message } severity={severity} />}
         </Container>
       </BrowserRouter>

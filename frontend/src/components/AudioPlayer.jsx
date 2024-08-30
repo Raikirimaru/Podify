@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { closePlayer, openPlayer, setCurrentTime } from '../redux/audioplayerSlice';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
     display: flex;
@@ -166,12 +167,12 @@ const VolumeBar = styled.input.attrs({
 `;
 
 export const AudioPlayer = ({ episode, podid, currenttime, index }) => {
-    const [isPlaying, setIsPlaying] = useState(false);
     const [progressWidth, setProgressWidth] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
     const audioRef = useRef(null);
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const handleCanPlay = () => {
@@ -179,13 +180,13 @@ export const AudioPlayer = ({ episode, podid, currenttime, index }) => {
                 audioRef.current.currentTime = currenttime;
             } else {
                 console.warn('Invalid current time value:', currenttime);
-              //  toast.warning('Invalid current time value provided because you are not logged in')
+              //   toast.warning(t('audioPlayer.invalidCurrentTime'));
             }
         };
 
         const handleError = (e) => {
             console.error('Audio error:', e);
-            toast.error('An error occurred while playing the audio')
+            toast.error(t('audioPlayer.audioError'));
         };
 
         const audio = audioRef.current;
@@ -200,7 +201,7 @@ export const AudioPlayer = ({ episode, podid, currenttime, index }) => {
                 audio.removeEventListener('error', handleError);
             }
         };
-    }, [currenttime, dispatch]);
+    }, [currenttime, dispatch, t]);
 
     const handleTimeUpdate = () => {
         const duration = audioRef.current.duration;
@@ -223,7 +224,7 @@ export const AudioPlayer = ({ episode, podid, currenttime, index }) => {
 
     const goToNextPodcast = () => {
         if (podid.episodes.length === index + 1) {
-            toast.info('This is the last episode')
+            toast.info(t('audioPlayer.lastEpisode'));
             return
         }
         dispatch(closePlayer());
@@ -242,7 +243,7 @@ export const AudioPlayer = ({ episode, podid, currenttime, index }) => {
 
     const goToPreviousPodcast = () => {
         if (index === 0) {
-            toast.info('This is the first episode')
+            toast.info(t('audioPlayer.firstEpisode'));
             return;
         }
         dispatch(closePlayer());

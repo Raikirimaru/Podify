@@ -8,6 +8,7 @@ import { addEpisodes, getPodcastById, getPodcastsByUserId } from '../api/server.
 import { CircularProgressWithLabel } from '../components/CircularProgressWithLabel.jsx'
 import { app } from "../storage/firebase.js";
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
     getStorage,
     ref,
@@ -213,6 +214,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
     const [availablePodcasts, setAvailablePodcasts] = useState([]);
     const [selectedPodcast, setSelectedPodcast] = useState("");
     const { currentUser } = useSelector(state => state.user);
+    const { t } = useTranslation();
 
     const dispatch = useDispatch();
     const token = localStorage.getItem("podifytoken");
@@ -224,15 +226,15 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                     if (response?.data && response?.data?.length > 0) {
                         setAvailablePodcasts(response?.data);
                     } else {
-                        toast.info('Not podcasts published by this user.')
+                        toast.info(t('uploadEpisodes.noPodcastsPublished'))
                     }
                 })
                 .catch(error => {
-                    toast.info('Not found podcasts')
+                    toast.info(t('uploadEpisodes.podcastsNotFound'))
                     console.error(error.message)
                 });
         }
-    }, [dispatch, token, currentUser]);
+    }, [dispatch, token, currentUser, t]);
 
 
     useEffect(() => {
@@ -245,30 +247,30 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                     }
                 })
                 .catch(error => {
-                    toast.error('Error fetching podcast details')
+                    toast.error(t('uploadEpisodes.fetchPodcastError'))
                     console.error(error.message)
                 });
         }
-    }, [dispatch, selectedPodcast, token]);
+    }, [dispatch, selectedPodcast, t, token]);
 
     const validateForm = () => {
         if (!podcast) {
-            toast.error('Podcast data is missing')
+            toast.error(t('uploadEpisodes.podcastDataMissing'))
             return false;
         }
     
         if (!podcast?.episodes || podcast?.episodes?.length === 0) {
-            toast.error('At least one episode is required')
+            toast.error(t('uploadEpisodes.atLeastOneEpisodeRequired'))
             return false;
         }
     
         if (!podcast.name) {
-            toast.error('Podcast name is required')
+            toast.error(t('uploadEpisodes.podcastNameRequired'))
             return false;
         }
     
         if (!podcast.desc) {
-            toast.error('Podcast description is required')
+            toast.error(t('uploadEpisodes.podcastDescriptionRequired'))
             return false;
         }
         return true;
@@ -279,15 +281,15 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
         podcast?.episodes?.forEach((episode) => {
             if (!episode.name) {
                 valid = false;
-                toast.error('Episode name is required')
+                toast.error(t('uploadEpisodes.episodeNameRequired'))
             }
             if (!episode.desc) {
                 valid = false;
-                toast.error('Episode description is required')
+                toast.error(t('uploadEpisodes.episodeDescriptionRequired'))
             }
             if (!episode.file) {
                 valid = false;
-                toast.error('Episode file is required')
+                toast.error(t('uploadEpisodes.episodeFileRequired'))
             }
         });
         return valid;
@@ -350,7 +352,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
     
                 switch (snapshot.state) {
                     case "paused":
-                        toast.message('paused')
+                        toast.message(t('uploadEpisodes.paused'))
                         console.log("Upload is paused");
                         break;
                     case "running":
@@ -362,41 +364,58 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
             },
             (error) => { 
                 console.error("Error uploading file:", error);
-                toast.error('Error uploading file')
+                toast.error(t('uploadEpisodes.errorUploadingFile'))
             },
             () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    const updatedEpisodes = podcast.episodes.map((episode, i) =>
-                        i === index ? { ...episode, file: downloadURL } : episode
-                    );
-                    setPodcast({ ...podcast, episodes: updatedEpisodes });
-                });
+                try {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        const updatedEpisodes = podcast.episodes.map((episode, i) =>
+                            i === index ? { ...episode, file: downloadURL } : episode
+                        );
+                        setPodcast({ ...podcast, episodes: updatedEpisodes });
+                    });
+                } catch (e) {
+                    console.error(e.message);
+                } 
             }
         );
     };
     
-    const validateFile = (file) => {
-        const validTypes = ["audio/mpeg", "audio/wav", "audio/mp3", "video/mp4", "video/ts", "video/avi"];
-        if (!validTypes.includes(file.type)) {
-            toast.error('Invalid file type. Please upload an audio or video file.')
+    const validateFile = (file, podcastType) => {
+        const validTypes = {
+            audio: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac", "audio/mp3", "audio/opus"],
+            video: ["video/mp4", "video/ts", "video/ogg", "video/avi", "video/mkv", "video/mov", "video/m4v"],
+        };
+    
+        if (!validTypes[podcastType].includes(file.type)) {
+            const errorMessage = podcastType === "audio"
+                ? 'uploadEpisodes.invalidAudioFileType'
+                : podcastType === "video"
+                    ? 'uploadEpisodes.invalidVideoFileType'
+                    : 'uploadEpisodes.invalidFileType';
+            toast.error(t(errorMessage));
             return false;
         }
+    
         if (file.size > 50000000) {
-            toast.error('File size too large. Please upload a file smaller than 50MB.')
+            toast.error(t('uploadEpisodes.fileSizeTooLarge'));
             return false;
         }
+    
         return true;
     };
+    
+    
 
     const handleFileChange = (e, index) => {
         const file = e.target.files[0];
-        if (validateFile(file)) {
+        if (validateFile(file, podcast.type)) {
             const updatedEpisodes = [...podcast.episodes];
             updatedEpisodes[index] = { ...updatedEpisodes[index], file: { uploadProgress: 0, name: file.name } };
             setPodcast({ ...podcast, episodes: updatedEpisodes });
             uploadFile(file, index);
         } else {
-            toast.error('Invalid file type')
+            toast.error(t('uploadEpisodes.invalidFileType'))
         }
     };
     
@@ -411,25 +430,22 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                     getPodcastById(selectedPodcast).then(response => {
                         if (response?.data) {
                             setPodcast(response?.data)
-                            const promise = () => new Promise((resolve) => setTimeout(() => resolve({ name: 'Episode' }), 2000));
-
+                            const promise = () => new Promise((resolve) => setTimeout(() => resolve(), 2000));
                             toast.promise(promise, {
                                 loading: 'Loading...',
-                                success: (data) => {
-                                    return `${data.name} has been added`;
-                                },
+                                success: () => t('uploadEpisodes.episodesAddedSuccessfully'),
                                 error: 'Error',
                             });
                         }
                     }).catch(error => {
-                        toast.error('Error fetching updated podcast details')
+                        toast.error(t('uploadEpisodes.errorFetchingUpdatedPodcastDetails'))
                         console.error(error.message);
                     });
                     setEpisodeUploadOpen(false);
                 })
                 .catch((error) => {
                     setLoading(false);
-                    toast.error('Error adding episodes')
+                    toast.error(t('uploadEpisodes.errorAddingEpisodes'))
                     console.error(error.message)
                 });
         }
@@ -458,16 +474,16 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                         }}
                         onClick={() => setEpisodeUploadOpen(false)}
                     />
-                    <Title>Upload Episodes</Title>
+                    <Title>{t('uploadEpisodes.uploadEpisode')}</Title>
                     {!showEpisode ? (
                         <>
-                            <Label>Select Podcast:</Label>
+                            <Label>{t('uploadEpisodes.selectPodcast')}</Label>
                             <OutlinedBox>
                                 <Select
                                     value={selectedPodcast}
                                     onChange={(e) => setSelectedPodcast(e.target.value)}
                                 >
-                                    <Option value="" disabled hidden>Select Podcast</Option>
+                                    <Option value="" disabled hidden>{t('uploadEpisodes.selectPodcast')}</Option>
                                     {availablePodcasts.map(podcast => (
                                         <Option key={podcast?._id} value={podcast?._id}>{podcast?.name}</Option>
                                     ))}
@@ -480,7 +496,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                     style={{ marginTop: "6px", width: "100%", margin: 0 }}
                                     onClick={() => setEpisodeUploadOpen(false)}
                                 >
-                                    Cancel
+                                    {t('uploadEpisodes.cancel')}
                                 </OutlinedBox>
                                 <OutlinedBox
                                     button={true}
@@ -490,20 +506,20 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                         !disabled && goToAddEpisodes();
                                     }}
                                 >
-                                    Next
+                                    {t('uploadEpisodes.next')}
                                 </OutlinedBox>
                             </ButtonContainer>
                         </>
                     ) : (
                         <>
-                            <Label>Episode Details:</Label>
+                            <Label>{t('uploadEpisodes.episodeDetails')}</Label>
                             {podcast?.episodes?.map((episode, index) => (
                                 <React.Fragment key={episode?._id || index}>
                                     <FileUpload htmlFor={"fileField" + index}>
                                         {episode?.file === "" ? (
                                             <Uploading>
                                                 <BackupRounded />
-                                                Select Audio / Video
+                                                {t('uploadEpisodes.selectAudioVideo')}
                                             </Uploading>
                                         ) : (
                                             <Uploading>
@@ -511,7 +527,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                                         <>
                                                             <div style={{ color: 'green', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center' }}>
                                                                 <CloudDoneRounded sx={{ color: 'inherit' }} />
-                                                                File Uploaded Successfully
+                                                                {t('uploadEpisodes.fileUploadedSuccessfully')}
                                                             </div>
                                                         </>
                                                     ) : (
@@ -532,7 +548,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                     />
                                     <OutlinedBox>
                                         <TextInput
-                                            placeholder="Episode Name*"
+                                            placeholder={t('uploadEpisodes.name')}
                                             type="text"
                                             value={episode?.name}
                                             onChange={(e) => {
@@ -544,7 +560,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                     </OutlinedBox>
                                     <OutlinedBox style={{ marginTop: "6px" }}>
                                         <Desc
-                                            placeholder="Episode Description* "
+                                            placeholder={t('uploadEpisodes.desc')}
                                             name="desc"
                                             rows={5}
                                             value={episode?.desc}
@@ -565,7 +581,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                             })
                                         }
                                     >
-                                        Remove
+                                        {t('uploadEpisodes.remove')}
                                     </OutlinedBox>
                                 </React.Fragment>
                             ))}
@@ -577,7 +593,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                     setPodcast({ ...podcast, episodes: [...podcast?.episodes, { name: "", desc: "", file: "" }] })
                                 }
                             >
-                                Add Episode
+                                {t('uploadEpisodes.addepisode')}
                             </OutlinedBox>
                             <ButtonContainer>
                                 <OutlinedBox
@@ -586,7 +602,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                     style={{ marginTop: "6px", width: "100%", margin: 0 }}
                                     onClick={() => goToPodcast()}
                                 >
-                                    Back
+                                    {t('uploadEpisodes.back')}
                                 </OutlinedBox>
                                 <OutlinedBox
                                     button={true}
@@ -594,7 +610,7 @@ export function EpisodeUpload({ setEpisodeUploadOpen }) {
                                     style={{ marginTop: "6px", width: "100%", margin: 0 }}
                                     onClick={() => add_episode_in_podcast()}
                                 >
-                                    {loading ? <CircularProgress size={20} /> : "Save"}
+                                    {loading ? <CircularProgress size={20} /> : t('uploadEpisodes.save')}
                                 </OutlinedBox>
                             </ButtonContainer>
                         </>

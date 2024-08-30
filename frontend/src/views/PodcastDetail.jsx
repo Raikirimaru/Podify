@@ -11,6 +11,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import { EpisodeCard } from '../components/EpisodeCard'
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next'
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -169,7 +170,7 @@ export const PodcastDetail = () => {
   const [user, setUser] = useState();
   const [loading, setLoading] = useState();
   const [subscribed, setSubscribed] = useState(false);
-
+  const { t } = useTranslation()
   const token = localStorage.getItem("podifytoken");
   const { currentUser } = useSelector(state => state.user);
 
@@ -183,35 +184,36 @@ export const PodcastDetail = () => {
           setFavourite(!favourite);
           setLoading(false);
           const message = favourite ? 
-                    "Podcast unmarked as favorite successfully!" : 
-                    "Podcast marked as favorite successfully!";
+                    t('PodcastDetail.PodcastUnmarkedFavorite') : 
+                    t('PodcastDetail.PodcastMarkedFavorite');
           toast.success(message)
         }
       } catch (err) {
         setLoading(false);
-        let errorMessage = "Something went wrong";
+        let errorMessage = t('PodcastDetail.Error');
 
         if (err.response) {
           if (err.response.status === 401) {
-            errorMessage = "You are not authorized. Please log in.";
+            errorMessage = t('PodcastDetail.Unauthorized');
           } else if (err.response.status === 404) {
-            errorMessage = "Podcast not found.";
+            errorMessage = t('PodcastDetail.PodcastNotFound');
           } else if (err.response.status === 500) {
-            errorMessage = "Internal server error. Please try again later.";
+            errorMessage = t('PodcastDetail.InternalServerError');
           } else {
-            errorMessage = `Error: ${err.response.status}. ${err.response.data.message}`;
+            console.error(`Error: ${err.response.status}. ${err.response.data.message}`)
+            errorMessage = t('PodcastDetail.Error');
           }
         } else if (err.request) {
-          errorMessage = "No response from the server. Please check your network connection.";
+          errorMessage = t('PodcastDetail.NoResponse');
         } else {
-          errorMessage = "Error in setting up the request.";
+          errorMessage = t('PodcastDetail.ConfigRequestError');
         }
 
         toast.error(errorMessage)
       }
     } else {
       setLoading(false);
-      toast.error('Invalid podcast data.')
+      toast.error(t('PodcastDetail.InvalidPodcastData'))
     }
   };
 
@@ -222,11 +224,11 @@ export const PodcastDetail = () => {
       setUser(res.data);
     } catch (err) {
       console.error('Error fetching user data:', err);
-      toast.error('Failed to fetch user data')
+      toast.error(t('PodcastDetail.ErrorFetchingUserData'))
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [t, token]);
 
 
   const getPodcast = useCallback(async () => {
@@ -241,9 +243,9 @@ export const PodcastDetail = () => {
       }
     } catch (err) {
       console.error('Error fetching podcast data:', err);
-      toast.error('Failed to fetch podcast data')
+      toast.error(t('PodcastDetail.ErrorFetchingPodcastData'))
     }
-  }, [id]);
+  }, [id, t]);
 
 
   const isFavourite = useMemo(() => {
@@ -273,23 +275,24 @@ export const PodcastDetail = () => {
 
     if (err.response) {
       if (err.response.status === 401) {
-        errorMessage = "You are not authorized. Please log in.";
+        errorMessage = t('PodcastDetail.Unauthorized');
       } else if (err.response.status === 404) {
-        errorMessage = "Podcast not found.";
+        errorMessage = t('PodcastDetail.PodcastNotFound');
       } else if (err.response.status === 500) {
-        errorMessage = "Internal server error. Please try again later.";
+        errorMessage = t('PodcastDetail.InternalServerError');
       } else {
-        errorMessage = `Error: ${err.response.status}. ${err.response.data.message}`;
+        console.error(`Error: ${err.response.status}. ${err.response.data.message}`)
+        errorMessage = t('PodcastDetail.Error');
       }
     } else if (err.request) {
-      errorMessage = "No response from the server. Please check your network connection.";
+      errorMessage = t('PodcastDetail.NoResponse');
     } else {
-      errorMessage = "Error in setting up the request.";
+      errorMessage = t('PodcastDetail.ConfigRequestError');
     }
     
     toast.error(errorMessage)
     console.error(err);
-  }, []);
+  }, [t]);
   
   const handleToggleSubscription = useCallback( async () => {
     setLoading(true);
@@ -297,17 +300,17 @@ export const PodcastDetail = () => {
       const res = await toggleSubscription(podcast?._id, token)
       if (res.data.message.includes('Unsubscribed')) {
         setSubscribed(false);
-        toast.success('Successfully unsubscribed from the podcast.')
+        toast.success(t('PodcastDetail.SubscriptionToggled.Unsubscribed'))
       } else {
         setSubscribed(true);
-        toast.success('Successfully subscribed to the podcast.')
+        toast.success(t('PodcastDetail.SubscriptionToggled.Subscribed'))
       }
     } catch (e) {
-      handleSubscriptionError(e, 'Failed to toggle subscription');
+      handleSubscriptionError(e, t('PodcastDetail.DefaultSubscriptionError'));
     } finally {
       setLoading(false);
     }
-  }, [handleSubscriptionError, podcast?._id, token])
+  }, [handleSubscriptionError, podcast?._id, t, token])
 
   return (
     <Container>
@@ -319,7 +322,7 @@ export const PodcastDetail = () => {
         <>
           <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
             <SubscribeButton onClick={() => handleToggleSubscription()}>
-              {currentUser && loading ? (<CircularProgress color="inherit" size={20} />) : subscribed ? "Unsubscribe" : "Subscribe"}
+              {currentUser && loading ? (<CircularProgress color="inherit" size={20} />) : subscribed ? t('PodcastDetail.Unsubscribe') : t('PodcastDetail.Subscribe')}
             </SubscribeButton>
             <Favorite onClick={() => favoritpodcast()}>
               {favourite ?
@@ -345,9 +348,9 @@ export const PodcastDetail = () => {
                   <Avatar src={podcast?.creator?.img} sx={{ width: "26px", height: "26px" }}>{podcast?.creator?.name.charAt(0).toUpperCase()}</Avatar>
                   <Creator>{podcast?.creator?.name}</Creator>
                 </CreatorDetails>
-                <Views>• {podcast?.views} Views</Views>
+                <Views>• {podcast?.views} {t('podcast_card.views')}</Views>
                 <Views>
-                  • {format(podcast?.createdAt)}
+                    {t('moreResult.formattedDate', { date: format(podcast?.createdAt) })}
                 </Views>
                 <Icon>
                   {podcast?.type === "audio" ?
@@ -360,7 +363,7 @@ export const PodcastDetail = () => {
             </Details>
           </Top>
           <Episodes>
-            <Topic>All Episodes</Topic>
+            <Topic>{t('PodcastDetail.AllEpisodes')}</Topic>
             <EpisodeWrapper>
               {podcast?.episodes?.map((episode, index) => (
                 <EpisodeCard key={index} episode={episode} podid={podcast} type={podcast.type} user={user} index={index} />

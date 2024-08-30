@@ -9,6 +9,7 @@ import { searchPodcast } from '../api/server.js';
 import { TopResult } from '../components/TopResult.jsx';
 import { MoreResult } from '../components/MoreResult.jsx';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const SearchMain = styled.div`
   padding: 20px 30px;
@@ -119,6 +120,7 @@ export const Search = () => {
   const [searched, setSearched] = useState('');
   const [searchedPodcasts, setSearchedPodcasts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation()
 
   const handleChange = async (e) => {
     setSearchedPodcasts([]);
@@ -130,7 +132,7 @@ export const Search = () => {
       console.log(res.data);
     } catch (err) {
       console.error(err.message);
-      toast.error('Fail to search for podcast')
+      toast.error(t('search.FailToSearchPodcast'))
     }
     setLoading(false);
   };
@@ -142,7 +144,7 @@ export const Search = () => {
           <SearchTwoTone sx={{ color: 'inherit' }} />
           <SearchInput
             type="text"
-            placeholder="Search Artists/Podcasts..."
+            placeholder={t('search.SearchPlaceholder')}
             value={searched}
             onChange={handleChange}
           />
@@ -150,10 +152,10 @@ export const Search = () => {
       </div>
       {searched === '' ? (
         <Categories>
-          <Heading>Browse All</Heading>
+          <Heading>{t('search.BrowseAll')}</Heading>
           <BrowseAll>
             {Category?.map((category) => (
-              <Link to={`/podcast/show/${category?.name?.toLowerCase()}`} style={{ textDecoration: 'none' }}>
+              <Link to={`/podcast/show/${category?.url?.toLowerCase()}`} style={{ textDecoration: 'none' }}>
                 <DefaultCard key={category?.name} category={category} />
               </Link>
             ))}
@@ -168,7 +170,7 @@ export const Search = () => {
           ) : (
             <SearchedCards>
               {searchedPodcasts?.length === 0 ? (
-                <DisplayNo>No Podcasts Found</DisplayNo>
+                <DisplayNo>{t('search.NoPodcastsFound')}</DisplayNo>
               ) : (
                 <>
                   <TopResult podcast={searchedPodcasts[0]} />

@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import { IconButton } from '@mui/material'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { IconButton } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { openSignin } from '../redux/setSigninSlice';
 import { favoritePodcast } from '../api/server.js';
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import Avatar from '@mui/material/Avatar'
-import { HeadphonesTwoTone, PlayArrowTwoTone } from '@mui/icons-material'
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import Avatar from '@mui/material/Avatar';
+import { HeadphonesTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 const PlayIcon = styled.div`
     padding: 10px;
@@ -25,9 +26,7 @@ const PlayIcon = styled.div`
     display: none;
     transition: all 0.4s ease-in-out;
     box-shadow: 0 0 16px 4px #9000ff50 !important;
-`
-
-
+`;
 
 const Card = styled(Link)`
     position: relative;
@@ -40,19 +39,19 @@ const Card = styled(Link)`
     justify-content: flex-start;
     align-items: center;
     padding: 16px;
-    border-radius: 6px;  
+    border-radius: 6px;
     box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.1);
-    &:hover{
+    &:hover {
         cursor: pointer;
         transform: translateY(-8px);
         transition: all 0.4s ease-in-out;
         box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.3);
         filter: brightness(1.3);
     }
-    &:hover ${PlayIcon}{
+    &:hover ${PlayIcon} {
         display: flex;
     }
-`
+`;
 
 const Top = styled.div`
     display: flex;
@@ -60,7 +59,8 @@ const Top = styled.div`
     align-items: center;
     height: 150px;
     position: relative;
-`
+`;
+
 const Title = styled.div`
     overflow: hidden;
     display: -webkit-box;
@@ -70,7 +70,7 @@ const Title = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     color: ${({ theme }) => theme.text_primary};
-`
+`;
 
 const Desc = styled.div`
     overflow: hidden;
@@ -82,7 +82,7 @@ const Desc = styled.div`
     text-overflow: ellipsis;
     color: ${({ theme }) => theme.text_secondary};
     font-size: 12px;
-`
+`;
 
 const CardImage = styled.img`
     object-fit: cover;
@@ -90,24 +90,26 @@ const CardImage = styled.img`
     height: 140px;
     border-radius: 6px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-    &:hover{
+    &:hover {
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
     }
-`
+`;
+
 const CardInfo = styled.div`
-    display:flex;
+    display: flex;
     align-items: flex-end;
-    font-weight:450;
+    font-weight: 450;
     padding: 14px 0px 0px 0px;
     width: 100%;
-`
+`;
+
 const MainInfo = styled.div`
     display: flex;
     width: 100%;
-    flex-direction:column;
+    flex-direction: column;
     justify-content: flex-start;
     gap: 4px;
-`
+`;
 
 const AuthorInfo = styled.div`
     display: flex;
@@ -115,22 +117,24 @@ const AuthorInfo = styled.div`
     justify-content: space-between;
     gap: 8px;
     margin-top: 6px;
-`
+`;
+
 const AuthorName = styled.div`
-    font-size:12px;
+    font-size: 12px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     color: ${({ theme }) => theme.text_secondary};
-`
+`;
 
 const Views = styled.div`
-    font-size:10px;
+    font-size: 10px;
     color: ${({ theme }) => theme.text_secondary};
     width: max-content;
-`
+`;
+
 const Favorite = styled(IconButton)`
-    color:white;
+    color: white;
     top: 8px;
     right: 6px;
     padding: 6px !important;
@@ -143,51 +147,49 @@ const Favorite = styled(IconButton)`
     position: absolute !important;
     backdrop-filter: blur(4px);
     box-shadow: 0 0 16px 6px #222423 !important;
-`
+`;
 
 export const PodcastCard = ({ podcast, user, setSignInOpen }) => {
-    const [favourite, setFavourite] = useState(false)
+    const [favourite, setFavourite] = useState(false);
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     const token = localStorage.getItem("podifytoken");
 
     const favoritpodcast = async () => {
         await favoritePodcast(podcast._id, token).then((res) => {
             if (res.status === 200) {
-                setFavourite(!favourite)
+                setFavourite(!favourite);
             }
-        }
-        ).catch((err) => {
-            console.log(err)
-        })
-    }
+        }).catch((err) => {
+            console.log(err);
+        });
+    };
 
-    React.useEffect(() => {
-        //favorits is an array of objects in which each object has a podcast id match it to the current podcast id
+    useEffect(() => {
         if (user?.favorits?.find((fav) => fav._id === podcast._id)) {
-            setFavourite(true)
+            setFavourite(true);
         }
-    }, [podcast._id, user])
+    }, [podcast._id, user]);
 
     const { currentUser } = useSelector(state => state.user);
+
     return (
         <Card to={`/podcast/${podcast._id}`}>
             <React.Fragment>
                 <Top>
                     <Link onClick={() => {
                         if (!currentUser) {
-                            dispatch(
-                                openSignin()
-                            )
+                            dispatch(openSignin());
                         } else {
-                            favoritpodcast()
+                            favoritpodcast();
                         }
                     }}>
                         <Favorite >
                             {favourite ?
-                                <FavoriteIcon style={{ color: "#E30022", width: '16px', height: '16px' }}></FavoriteIcon>
+                                <FavoriteIcon style={{ color: "#E30022", width: '16px', height: '16px' }} />
                                 :
-                                <FavoriteIcon style={{ width: '16px', height: '16px' }}></FavoriteIcon>
+                                <FavoriteIcon style={{ width: '16px', height: '16px' }} />
                             }
                         </Favorite>
                     </Link>
@@ -200,13 +202,14 @@ export const PodcastCard = ({ podcast, user, setSignInOpen }) => {
                         <AuthorInfo>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Avatar
-                                    src={podcast.creator.img} style={{ width: '26px', height: '26px' }}>{podcast.creator.name?.charAt(0).toUpperCase()}</Avatar>
+                                    src={podcast.creator.img} style={{ width: '26px', height: '26px' }}>
+                                    {podcast.creator.name?.charAt(0).toUpperCase()}
+                                </Avatar>
                                 <AuthorName>
                                     {podcast.creator.name}
                                 </AuthorName>
-
                             </div>
-                            <Views>• {podcast.views} Views</Views>
+                            <Views>• {podcast.views} {t('podcast_card.views')}</Views>
                         </AuthorInfo>
                     </MainInfo>
                 </CardInfo>
@@ -219,5 +222,5 @@ export const PodcastCard = ({ podcast, user, setSignInOpen }) => {
                 }
             </PlayIcon>
         </Card>
-    )
-}
+    );
+};

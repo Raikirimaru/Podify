@@ -65,6 +65,7 @@ export const sendAccountRegisteredEmail = async (to) => {
                     .button {
                         background-color: #1a64db;
                         color: #ffffff;
+                        text-color: #ffffff
                         padding: 10px 20px;
                         text-decoration: none;
                         border-radius: 5px;
@@ -74,11 +75,11 @@ export const sendAccountRegisteredEmail = async (to) => {
             </head>
             <body>
                 <div class="container">
-                    <img src="path_to_your_logo.png" alt="Company Logo" class="logo">
+                    <img src=${'../resource/image/logo.svg'} alt="Company Logo" class="logo">
                     <h1>Account Registered</h1>
                     <p>Thank you for registering! Your account has been successfully created.</p>
                     <p>Please check your email for further instructions to confirm your email address.</p>
-                    <a href="http://yourwebsite.com/login" class="button">Go to Login</a>
+                    <a href="https://podify-togocom.vercel.app" class="button">Go to Login</a>
                 </div>
             </body>
             </html>

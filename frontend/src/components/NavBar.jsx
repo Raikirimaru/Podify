@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { openSignin } from '../redux/setSigninSlice';
 import { Link } from 'react-router-dom';
 import { NotificationIcon } from './NotificationIcon';
+import { useTranslation } from 'react-i18next';
 
 const Navbardiv = styled.div`
     display: flex;
@@ -40,7 +41,7 @@ const Buttondiv = styled.div`
     border: 1px solid ${({ theme }) => theme.primary};
     border-radius: 12px;
     width: 100%;
-    max-width: 80px;
+    max-width: 150px;
     padding: 8px 10px;
     text-align: center;
     display: flex;
@@ -65,9 +66,25 @@ const Welcome = styled.div`
     }
 `;
 
+const LanguageSelector = styled.select`
+    border: none;
+    background: transparent;
+    color: ${({ theme }) => theme.text_primary};
+    font-size: 16px;
+    cursor: pointer;
+    &:focus {
+        outline: none;
+    }
+`;
+
 export function NavBar({ setMenuOpen, menuOpen, setSignInOpen, setSignUpOpen }) {
     const { currentUser } = useSelector(state => state.user);
     const dispatch = useDispatch();
+    const { t, i18n } = useTranslation();
+
+    const changeLanguage = (e) => {
+        i18n.changeLanguage(e.target.value);
+    };
 
     return (
         <Navbardiv>
@@ -76,13 +93,17 @@ export function NavBar({ setMenuOpen, menuOpen, setSignInOpen, setSignUpOpen }) 
             </IcoButton>
             {currentUser ? (
                 <Welcome>
-                    Welcome, {currentUser?.name}
+                    {t('welcome')}, {currentUser?.name}
                 </Welcome>
             ) : (
                 <>&nbsp;</>
             )}
             <ButtonContainer>
                 <NotificationIcon />
+                <LanguageSelector onChange={changeLanguage} value={i18n.language}>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </LanguageSelector>
                 {currentUser ? (
                     <Link to='/profile' style={{ textDecoration: 'none' }}>
                         <Avatar src={currentUser?.img}>
@@ -92,7 +113,7 @@ export function NavBar({ setMenuOpen, menuOpen, setSignInOpen, setSignUpOpen }) 
                 ) : (
                     <Buttondiv onClick={() => dispatch(openSignin())}>
                         <LoginTwoTone style={{ fontSize: "18px" }} />
-                        Log In
+                        {t('login')}
                     </Buttondiv>
                 )}
             </ButtonContainer>

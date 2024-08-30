@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { closePlayer, openPlayer, setCurrentTime } from '../redux/audioplayerSlice';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next'
 
 const Container = styled.div`
     width: 100%;
@@ -86,6 +87,7 @@ const Btn = styled.div`
 export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
     const dispatch = useDispatch();
     const videoref = useRef(null);
+    const { t } = useTranslation()
 
     useEffect(() => {
         const handleCanPlay = () => {
@@ -93,13 +95,13 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
                 videoref.current.currentTime = currenttime;
             } else {
                 console.error('Invalid currenttime value:', currenttime);
-               // toast.error('Invalid current time value provided')
+               // toast.error(t('videoPlayer.errors.invalidCurrentTime))
             }
         };
 
         const handleError = (e) => {
             console.error('Video error:', e);
-            toast.error('Error loading video. Please check your connection.')
+            toast.error(t('videoPlayer.errors.videoLoadError'))
         };
 
         const video = videoref.current;
@@ -114,7 +116,7 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
                 video.removeEventListener('error', handleError);
             }
         };
-    }, [currenttime, dispatch]);
+    }, [currenttime, dispatch, t]);
 
     const handleTimeUpdate = () => {
         const currentTime = videoref.current.currentTime;
@@ -127,7 +129,7 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
 
     const goToNextPodcast = () => {
         if (podid.episodes.length === index + 1) {
-            toast.info('This is the last episode')
+            toast.info(t('videoPlayer.lastEpisode'))
             return;
         }
         dispatch(closePlayer());
@@ -146,7 +148,7 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
 
     const goToPreviousPodcast = () => {
         if (index === 0) {
-            toast.info('This is the first episode')
+            toast.info(t('videoPlayer.firstEpisode'))
             return;
         }
         dispatch(closePlayer());
@@ -189,20 +191,20 @@ export const VideoPlayer = ({ episode, podid, currenttime, index }) => {
                                 videoref.current.currentTime = currenttime;
                             } else {
                                 console.warn('Invalid currenttime value on play:', currenttime);
-                               // toast.warning('Invalid current time value on play because you are not logged in')
+                               // toast.warning(t('videoPlayer.warnings.invalidCurrentTimeOnPlay))
                             }
                         }}
                     >
                         <source src={episode.file} type="video/mp4" />
                         <source src={episode.file} type="video/webm" />
                         <source src={episode.file} type="video/ogg" />
-                        Your browser does not support the video tag.
+                        {t('videoPlayer.labels.browserNotSupported')}
                     </Videoplayer>
                     <EpisodeName>{episode.name}</EpisodeName>
                     <EpisodeDescription>{episode.desc}</EpisodeDescription>
                     <BtnContainer>
-                        <Btn onClick={() => goToPreviousPodcast()}>Previous</Btn>
-                        <Btn onClick={() => goToNextPodcast()}>Next</Btn>
+                        <Btn onClick={() => goToPreviousPodcast()}>{t('videoPlayer.labels.previous')}</Btn>
+                        <Btn onClick={() => goToNextPodcast()}>{t('videoPlayer.labels.next')}</Btn>
                     </BtnContainer>
                 </Wrapper>
             </Container>

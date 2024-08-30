@@ -1,0 +1,262 @@
+{
+    "welcome": "Bienvenue",
+    "login": "Se connecter",
+    "menu": {
+        "dashboard": "Tableau de bord",
+        "search": "Rechercher",
+        "favorites": "Favoris",
+        "upload": "Importer",
+        "light_mode": "Mode clair",
+        "dark_mode": "Mode sombre",
+        "log_out": "Se déconnecter",
+        "log_in": "Se connecter"
+    },
+    "audioPlayer": {
+        "invalidCurrentTime": "Valeur de temps actuel invalide fournie car vous n'êtes pas connecté",
+        "audioError": "Une erreur s'est produite lors de la lecture de l'audio",
+        "lastEpisode": "C'est le dernier épisode",
+        "firstEpisode": "C'est le premier épisode",
+        "title": "Titre",
+        "artist": "Artiste"
+    },
+    "uploadProgress": "Importé",
+    "uploadPodcast": {
+        "title": "Import de podcast",
+        "publish": "Enregistrer et publier",
+        "podcastName": "Nom du podcast est requis",
+        "podcastDescription": "Description du podcast est requise",
+        "tagsPlaceholder": "Tags séparés par ,",
+        "selectType": "Sélectionner le type",
+        "audioOption": "Audio",
+        "videoOption": "Vidéo",
+        "selectCategoryPlaceholder": "Sélectionner la catégorie",
+        "podcastDetails": "Détails du Podcast :",
+        "nameRequired": "Le nom est requis",
+        "descriptionRequired": "La description est requise",
+        "tagRequired": "Au moins une étiquette est requise",
+        "categoryRequired": "La catégorie est requise",
+        "thumbnailRequired": "La vignette est requise",
+        "cancel": "Annuler",
+        "next": "Suivant",
+        "save": "Enregistrer",
+        "addepisode": "Ajouter un épisode",
+        "podcastAddedSuccessfully": "Podcast ajouté avec succès",
+        "podcastNameRequired": "Le nom du podcast est requis",
+        "podcastDescriptionRequired": "La description du podcast est requise",
+        "errorCreatedPodcast": "Erreur lors de la création du podcast"
+    },
+    "uploadEpisodes": {
+        "uploadEpisode": "Importer des Épisodes",
+        "selectPodcast": "Sélectionner le Podcast",
+        "cancel": "Annuler",
+        "next": "Suivant",
+        "remove": "Retirer",
+        "addepisode": "Ajouter un épisode",
+        "back": "Retour",
+        "save": "Enregistrer",
+        "desc": "Description de l'épisode est requise",
+        "name": "Nom de l'épisode est requis",
+        "episodeDetails": "Détails de l'Épisode :",
+        "selectAudioVideo": "Sélectionner Audio / Vidéo",
+        "fileUploadedSuccessfully": "Fichier Importé avec Succès",
+        "episodesAddedSuccessfully": "Episode Ajouté avec Succès",
+        "episodeNameRequired": "Le nom de l'épisode est requis",
+        "episodeDescriptionRequired": "La description de l'épisode est requise",
+        "episodeFileRequired": "Le fichier de l'épisode est requis",
+        "podcastDataMissing": "Les données du podcast sont manquantes",
+        "atLeastOneEpisodeRequired": "Au moins un épisode est requis",
+        "invalidFileType": "Type de fichier invalide. Veuillez Importer un fichier audio ou vidéo.",
+        "invalidAudioFileType": "Type de fichier non valide. Veuillez Importer un fichier audio.",
+        "invalidVideoFileType": "Type de fichier non valide. Veuillez Importer un fichier vidéo.",
+        "fileSizeTooLarge": "Taille du fichier trop grande. Veuillez Importer un fichier de moins de 50 Mo.",
+        "errorFetchingPodcastDetails": "Erreur lors de la récupération des détails du podcast",
+        "errorFetchingUpdatedPodcastDetails": "Erreur lors de la récupération des détails mis à jour du podcast",
+        "errorAddingEpisodes": "Erreur lors de l'ajout des épisodes",
+        "notFoundPodcasts": "Aucun podcast trouvé",
+        "notPodcastsPublished": "Aucun podcast publié par cet utilisateur.",
+        "paused": "en pause"
+    },
+    "imgSelector": {
+        "invalidFileType": "Type de fichier invalide. Veuillez télécharger une image au format JPG, JFIF, GIF, JPEG ou PNG.",
+        "fileSizeExceedsLimit": "La taille du fichier dépasse la limite de 10 Mo.",
+        "browseImage": "Parcourir l'image",
+        "clickHereToUpload": "Cliquez ici pour télécharger une miniature",
+        "or": "ou"
+    },
+    "moreResult": {
+        "views": "Vues",
+        "formattedDate": "• {{date}}"
+    },
+    "notification": {
+        "new_notification": "Vous avez reçu une nouvelle notification",
+        "no_notifications": "Aucune notification"
+    },
+    "otp": {
+        "verify_otp": "VÉRIFIER LE CODE OTP",
+        "verification_sent": "Un code OTP de vérification a été envoyé à : ",
+        "otp_sent_success": "OTP envoyé avec succès",
+        "submit": "Soumettre",
+        "resend": "Renvoyer",
+        "sending_otp": "Envoi du code OTP",
+        "resend_in": "Renvoyer dans",
+        "invalid_request": "Demande invalide. Veuillez vérifier votre saisie.",
+        "unauthorized": "Non autorisé. Veuillez vous inscrire et réessayer.",
+        "service_not_found": "Service non trouvé. Veuillez réessayer plus tard.",
+        "unexpected_error": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+        "failed_send_otp": "Échec de l'envoi du code OTP. Veuillez vérifier votre connexion réseau et réessayer.",
+        "invalid_otp": "Code OTP invalide. Veuillez vérifier et réessayer.",
+        "failed_validate_otp": "Échec de la validation du code OTP. Veuillez vérifier votre connexion réseau et réessayer."
+    },
+    "podcast_card": {
+        "views": "Vues",
+        "play_video": "Lire la vidéo",
+        "play_audio": "Écouter l'audio"
+    },
+    "messages": {
+        "sign_in_prompt": "Veuillez vous connecter pour ajouter ce podcast à vos favoris."
+    },
+    "Sign": {
+        "title": "Connexion",
+        "login": "Se connecter",
+        "sign_up": "Inscrivez-vous",
+        "sign_up_title": "Inscription",
+        "successCreatedAccount": "OTP vérifié et compte créé avec succès",
+        "signInWithGoogle": "Se connecter avec Google",
+        "successLoggedIn": "Connecté avec succès",
+        "fullNamePlaceholder": "Nom Complet",
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Mot de passe",
+        "forgotPassword": "Mot de passe oublié?",
+        "signInButton": "Se connecter",
+        "noAccount": "Vous n'avez pas de compte ?",
+        "createAccount": "Créer un compte",
+        "resetPasswordTitle": "Réinitialiser le mot de passe",
+        "updatingPassword": "Mise à jour du mot de passe",
+        "newPasswordPlaceholder": "Nouveau mot de passe",
+        "confirmPasswordPlaceholder": "Confirmer le mot de passe",
+        "submitButton": "Soumettre",
+        "accountNotVerified": "Compte non vérifié",
+        "nameTooShort": "Le nom doit comporter au moins 4 caractères !",
+        "emailInvalid": "Entrez un e-mail valide !",
+        "invalidCredentials": "Identifiants invalides",
+        "incorrectPassword": "Mot de passe incorrect",
+        "internalServerError": "Erreur interne du serveur",
+        "connectionError": "Erreur de connexion",
+        "passwordLengthError": "Le mot de passe doit comporter au moins 8 caractères!",
+        "passwordLengthMaxError": "Le mot de passe doit comporter moins de 16 caractères!",
+        "passwordComplexityError": "Le mot de passe doit contenir au moins une lettre minuscule, une majuscule, un chiffre et un caractère spécial!",
+        "passwordMismatchError": "Les mots de passe ne correspondent pas!",
+        "userNotFound": "Utilisateur non trouvé. Veuillez vous inscrire et réessayer.",
+        "userAlreadyExists": "E-mail déjà utilisé. Veuillez utiliser un autre e-mail.",
+        "otpSendFailure": "Échec de l'envoi de l'OTP",
+        "otpSent": "OTP envoyé avec succès",
+        "passwordResetSuccess": "Mot de passe réinitialisé avec succès",
+        "passwordResetFailed": "Réinitialisation du mot de passe échouée",
+        "googleLoginFailed": "Échec de la connexion à Google",
+        "googleLoginError": "Erreur de connexion à Google",
+        "createAccountFailed": "La création du compte a échoué",
+        "Errors": {
+            "emptyFields": "Veuillez remplir tous les champs.",
+            "accountNotVerified": "Compte non vérifié. Veuillez vérifier votre email pour les instructions de vérification.",
+            "invalidEmailOrPassword": "Email ou mot de passe invalide. Veuillez réessayer.",
+            "incorrectPassword": "Mot de passe incorrect. Veuillez réessayer.",
+            "internalServerError": "Erreur interne du serveur. Veuillez réessayer plus tard.",
+            "loginFailed": "Échec de la connexion: ",
+            "unexpected": "Erreur inattendue. Veuillez réessayer",
+            "connectionError": "Erreur de connexion. Veuillez vérifier votre connexion Internet et réessayer."
+        }
+    },
+    "videoPlayer": {
+        "lastEpisode": "C'est le dernier épisode.",
+        "firstEpisode": "C'est le premier épisode.",
+        "errors": {
+            "invalidCurrentTime": "Valeur de l'heure actuelle invalide fournie.",
+            "videoLoadError": "Erreur de chargement de la vidéo. Veuillez vérifier votre connexion."
+        },
+        "warnings": {
+            "invalidCurrentTimeOnPlay": "Valeur de l'heure actuelle invalide lors de la lecture car vous n'êtes pas connecté."
+        },
+        "labels": {
+            "previous": "Précédent",
+            "next": "Suivant",
+            "episodeName": "Nom de l'épisode",
+            "episodeDescription": "Description de l'épisode",
+            "browserNotSupported": "Votre navigateur ne supporte pas la balise vidéo."
+        }
+    },
+    "dashboard": {
+        "youruploads": "Vos Importations",
+        "showall": "Voir Tout",
+        "mostpopular": "Les Plus Populaires",
+        "comedy": "Comédie",
+        "news": "Actualités",
+        "crime": "Criminalité",
+        "sports": "Sports",
+        "noPodcasts": "Aucun Podcast",
+        "loading": "Chargement..."
+    },
+    "editProfile": {
+        "modifyProfile": "Modifier le Profil",
+        "namePlaceholder": "Nom",
+        "emailPlaceholder": "E-mail",
+        "pictureProfile": "Photo de Profil",
+        "uploadFile": "Importer un fichier",
+        "dragAndDrop": "ou glisser-déposer",
+        "fileRequirements": "PNG, JPG, GIF jusqu'à 10 Mo",
+        "saveChanges": "Enregistrer les modifications",
+        "nameRequired": "Le nom est requis",
+        "invalidEmail": "Format d'e-mail invalide",
+        "imageSizeError": "La taille de l'image doit être inférieure à 10 Mo",
+        "profileUpdatedSuccess": "Profil mis à jour avec succès",
+        "profileUpdateFailed": "Échec de la mise à jour du profil"
+    },
+    "Favorites": {
+        "title": "Favoris",
+        "NoFavorites": "Aucun Favori"
+    },
+    "PodcastDetail": {
+        "PodcastMarkedFavorite": "Le podcast a été marqué comme favori avec succès !",
+        "PodcastUnmarkedFavorite": "Le podcast a été retiré des favoris avec succès !",
+        "NoResponse": "Aucune réponse du serveur. Veuillez vérifier votre connexion réseau.",
+        "InvalidPodcastData": "Données du podcast invalides.",
+        "ErrorFetchingUserData": "Échec de la récupération des données utilisateur",
+        "ErrorFetchingPodcastData": "Échec de la récupération des données du podcast",
+        "SubscriptionToggled": {
+            "Subscribed": "Abonnement au podcast réussi.",
+            "Unsubscribed": "Désabonnement du podcast réussi."
+        },
+        "Error": "Une erreur est survenue",
+        "Unauthorized": "Vous n'êtes pas autorisé. Veuillez vous connecter.",
+        "PodcastNotFound": "Podcast non trouvé.",
+        "InternalServerError": "Erreur interne du serveur. Veuillez réessayer plus tard.",
+        "DefaultSubscriptionError": "Échec du basculement de l'abonnement",
+        "AllEpisodes": "Tous les épisodes",
+        "Subscribe": "S'abonner",
+        "Unsubscribe": "Se désabonner",
+        "ConfigRequestError": "Erreur lors de la configuration de la requête."
+    },
+    "profile": {
+        "your_Favorites": "Vos Favoris"
+    },
+    "search": {
+        "SearchPlaceholder": "Rechercher des artistes/podcasts...",
+        "FailToSearchPodcast": "Échec de la recherche de podcast",
+        "NoPodcastsFound": "Aucun podcast trouvé",
+        "BrowseAll": "Explorer tout"
+    },
+    "category": {
+        "culture": "Culture",
+        "business": "Affaires",
+        "education": "Éducation",
+        "health": "Santé",
+        "comedy": "Comédie",
+        "news": "Actualités",
+        "science": "Science",
+        "history": "Histoire",
+        "religion": "Religion",
+        "development": "Développement",
+        "sports": "Sports",
+        "crime": "Criminalité",
+        "distraction": "Divertissement"
+    }
+}

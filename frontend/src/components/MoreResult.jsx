@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { format } from 'timeago.js';
+import { useTranslation } from 'react-i18next';
 
 const Results = styled(Link)`
     background-color: ${({ theme }) => theme.bgLight};
@@ -58,6 +59,7 @@ const Desciption = styled.div`
 `
 
 export const MoreResult = ({ podcast }) => {
+    const { t } = useTranslation();
     return (
         <Results to={`/podcast/${podcast?._id}`} style={{ textDecoration: "none" }}>
             <PodcastImage src={podcast?.thumbnail} />
@@ -66,10 +68,10 @@ export const MoreResult = ({ podcast }) => {
                 <Desciption>
                     <Creator style={{ marginRight: '12px' }}>{podcast?.creator.name}</Creator>
                     <Time>
-                        • {podcast?.views} Views
+                        • {podcast?.views} {t('moreResult.views')}
                     </Time>
                     <Time>
-                        • {format(podcast?.createdAt)}
+                        {t('moreResult.formattedDate', { date: format(podcast?.createdAt) })}
                     </Time>
                 </Desciption>
             </PodcastInfo>

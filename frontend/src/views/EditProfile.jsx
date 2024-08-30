@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getUsers, updateUser } from "../api/server.js";
-import { openSnackbar } from "../redux/snackbarSlice.jsx";
 import { PhotoTwoTone } from '@mui/icons-material';
 import { CircularProgress } from '@mui/material'
 import { toast } from 'sonner'
+import { useTranslation } from "react-i18next";
 
 
 const ScrollableContainer = styled.div`
@@ -52,7 +52,8 @@ const Button = styled.button`
     border: none;
     border-radius: 10px;
     cursor: pointer;
-
+    font-weight: 500;
+    font-size: 1.3em;
     &:hover {
         background-color: ${({ theme }) => theme.primary_hover};
     }
@@ -124,7 +125,7 @@ export function EditProfile() {
     const [img, setImg] = useState(null);
     const { currentUser } = useSelector((state) => state.user);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const { t } = useTranslation()
     const token = localStorage.getItem("podifytoken");
 
     useEffect(() => {
@@ -158,19 +159,19 @@ export function EditProfile() {
         e.preventDefault();
         if (!name.trim() || !name) {
             //dispatch(openSnackbar({ message: "Name is required", severity: "error" }));
-            toast.error('Name is required')
+            toast.error(t('editProfile.nameRequired'))
             return;
         }
 
         if (!validateEmail(email)) {
             //dispatch(openSnackbar({ message: "Invalid email format", severity: "error" }));
-            toast.error('Invalid email format')
+            toast.error(t('editProfile.invalidEmail'))
             return;
         }
 
         if (img && img.size > 10 * 1024 * 1024) {
             //dispatch(openSnackbar({ message: "Image size should be less than 10MB", severity: "error" }));
-            toast.error('Image size should be less than 10MB')
+            toast.error(t('editProfile.imageSizeError'))
             return;
         }
         const formData = new FormData()
@@ -182,11 +183,11 @@ export function EditProfile() {
         setLoading(true)
         await updateUser(token, currentUser._id, formData).then((res) => {
             //dispatch(openSnackbar({ message: "Profile updated successfully", severity: "success" }));
-            toast.success('Profile updated successfully')
+            toast.success(t('editProfile.profileUpdatedSuccess'))
             navigate("/profile");
         }).catch((error) => {
             //dispatch(openSnackbar({ message: `Failed to update profile: ${error}`, severity: "error" }));
-            toast.error('Failed to update profile')
+            toast.error(t('editProfile.profileUpdateFailed'))
             console.log(error);
         }).finally((done) => {
             setLoading(false)
@@ -195,30 +196,30 @@ export function EditProfile() {
 
     return (
         <ScrollableContainer>
-            <Title>Modify The Profile</Title>
+            <Title>{t('editProfile.modifyProfile')}</Title>
             <Form onSubmit={handleSubmit}>
                 <Input
                     type="text"
-                    placeholder="Name"
+                    placeholder={t('editProfile.namePlaceholder')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
                 <Input
                     type="email"
-                    placeholder="Email"
+                    placeholder={t('editProfile.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
                 <FileUploadContainer>
-                    <Label htmlFor="cover-photo">Picture Profile</Label>
+                    <Label htmlFor="cover-photo">{t('editProfile.pictureProfile')}</Label>
                     <FileUploadBox>
                         <FileUploadText>
                             {preview ? <ImagePreview src={preview} alt={"Preview"} /> : <PhotoTwoTone style={{ fontSize: '48px', color: '#ccc' }} />}
                             <div>
                                 <UploadButton htmlFor="file-upload">
-                                <span>Upload a file</span>
+                                <span>{t('editProfile.uploadFile')}</span>
                                 <HiddenInput
                                     id="file-upload"
                                     name="file-upload"
@@ -227,8 +228,8 @@ export function EditProfile() {
                                 />
                                 </UploadButton>
                             </div>
-                            <p>or drag and drop</p>
-                            <p>PNG, JPG, GIF up to 10MB</p>
+                            <p>{t('editProfile.dragAndDrop')}</p>
+                            <p>{t('editProfile.fileRequirements')}</p>
                         </FileUploadText>
                     </FileUploadBox>
                 </FileUploadContainer>
@@ -236,7 +237,7 @@ export function EditProfile() {
                     {loading ? (
                         <CircularProgress color="inherit" size={20} />
                     ) : (
-                        "Save Changes"
+                        t('editProfile.saveChanges')
                     )}
                 </Button>
             </Form>

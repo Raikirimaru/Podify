@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import ReactImageFileToBase64 from "react-file-image-to-base64";
 import { CloudUploadTwoTone } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next'
 
 
 const Container = styled.div`
@@ -39,7 +39,7 @@ const Img = styled.img`
 `;
 
 export const ImageSelector = ({ podcast, setPodcast }) => {
-    const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     const handleOnCompleted = files => {
         if (files && files.length > 0) {
@@ -48,12 +48,12 @@ export const ImageSelector = ({ podcast, setPodcast }) => {
             const maxSize = 10 * 1024 * 1024;
 
             if (!allowedTypes.includes(file.file_type)) {
-                toast.error('Invalid file type. Please upload an image in JPG, JFIF, GIF, JPEG, or PNG format.')
+                toast.error(t('imgSelector.invalidFileType'));
                 return;
             }
 
             if (parseInt(file.file_size.replace(' KB', '')) * 1024 > maxSize) {
-                toast.error('File size exceeds the 10MB limit.')
+                toast.error(t('imgSelector.fileSizeExceedsLimit'));
                 return;
             }
 
@@ -67,7 +67,7 @@ export const ImageSelector = ({ podcast, setPodcast }) => {
     const CustomisedButton = ({ triggerInput } = {}) => {
         return (
             <TextBtn onClick={triggerInput}>
-                Browse Image
+                {t('imgSelector.browseImage')}
             </TextBtn>
         );
     };
@@ -79,9 +79,9 @@ export const ImageSelector = ({ podcast, setPodcast }) => {
             ) : (
                 <>
                     <CloudUploadTwoTone sx={{ fontSize: "40px" }} />
-                    <Typo>Click here to upload thumbnail</Typo>
+                    <Typo>{t('imgSelector.clickHereToUpload')}</Typo>
                     <div style={{ display: "flex", gap: '6px' }}>
-                        <Typo>or</Typo>
+                        <Typo>{t('imgSelector.or')}</Typo>
                         <ReactImageFileToBase64
                             onCompleted={handleOnCompleted}
                             CustomisedButton={CustomisedButton}

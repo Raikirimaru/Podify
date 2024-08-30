@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { PodcastCard } from '../components/PodcastCard';
 import { CircularProgress } from '@mui/material';
 import { getUsers } from '../api/server.js';
+import { useTranslation } from 'react-i18next'
 
 const Container = styled.div`
     padding: 20px 30px;
@@ -55,7 +56,7 @@ export function Favorite() {
     const [user, setUser] = useState();
     const [loading, setLoading] = useState(false);
     const { currentUser } = useSelector(state => state.user);
-
+    const { t } = useTranslation()
     const token = localStorage.getItem("podifytoken");
 
     const getUser = useCallback(async () => {
@@ -81,14 +82,14 @@ export function Favorite() {
 
     return (
         <Container>
-            <Topic>Favorites</Topic>
+            <Topic>{t('Favorites.title')}</Topic>
             {loading ? (
                 <Loader>
                     <CircularProgress />
                 </Loader>
             ) : (
                 <FavouritesContainer>
-                    {user?.favorits?.length === 0 && <DisplayNo>No Favorites</DisplayNo>}
+                    {user?.favorits?.length === 0 && <DisplayNo>{t('Favorites.NoFavorites')}</DisplayNo>}
                     {user && user?.favorits?.map((podcast) => (
                         <PodcastCard key={podcast?._id} podcast={podcast} user={user} />
                     ))}

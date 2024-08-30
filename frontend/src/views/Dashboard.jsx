@@ -5,6 +5,7 @@ import { getMostPopularPodcast, getUsers, getPodcastByCategory } from '../api/se
 import { useSelector } from 'react-redux';
 import { PodcastCard } from '../components/PodcastCard';
 import { CircularProgress } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const DashboardMain = styled.div`
     padding: 20px 30px;
@@ -86,7 +87,7 @@ export const Dashboard = ({ setSignInOpen }) => {
     const [sports, setsports] = useState([]);
     const [crime, setCrime] = useState([]);
     const [loading, setLoading] = useState(false);
-
+    const { t } = useTranslation()
     const { currentUser } = useSelector(state => state.user);
     const token = localStorage.getItem("podifytoken");
 
@@ -173,9 +174,9 @@ export const Dashboard = ({ setSignInOpen }) => {
                 <>
                     {currentUser && user?.podcasts?.length > 0 &&
                         <FilterContainer box={true}>
-                            <Topic>Your Uploads
+                            <Topic>{t('dashboard.youruploads')}
                                 <Link to={`/profile`} style={{ textDecoration: "none" }}>
-                                    <Span>Show All</Span>
+                                    <Span>{t('dashboard.showall')}</Span>
                                 </Link>
                             </Topic>
                             <Podcasts>
@@ -186,9 +187,9 @@ export const Dashboard = ({ setSignInOpen }) => {
                         </FilterContainer>
                     }
                     <FilterContainer>
-                        <Topic>Most Popular
+                        <Topic>{t('dashboard.mostpopular')}
                             <Link to={`/podcast/show/mostpopular`} style={{ textDecoration: "none" }}>
-                                <Span>Show All</Span>
+                                <Span>{t('dashboard.showall')}</Span>
                             </Link>
                         </Topic>
                         <Podcasts>
@@ -198,9 +199,9 @@ export const Dashboard = ({ setSignInOpen }) => {
                         </Podcasts>
                     </FilterContainer>
                     <FilterContainer>
-                        <Topic>Comedy
+                        <Topic>{t('dashboard.comedy')}
                             <Link to={`/podcast/show/comedy`} style={{ textDecoration: "none" }}>
-                                <Span>Show All</Span>
+                                <Span>{t('dashboard.showall')}</Span>
                             </Link>
                         </Topic>
                         <Podcasts>
@@ -211,8 +212,8 @@ export const Dashboard = ({ setSignInOpen }) => {
                     </FilterContainer>
                     <FilterContainer>
                         <Link to={`/podcast/show/news`} style={{ textDecoration: "none" }}>
-                            <Topic>News
-                                <Span>Show All</Span>
+                            <Topic>{t('dashboard.news')}
+                                <Span>{t('dashboard.showall')}</Span>
                             </Topic>
                         </Link>
                         <Podcasts>
@@ -223,8 +224,8 @@ export const Dashboard = ({ setSignInOpen }) => {
                     </FilterContainer>
                     <FilterContainer>
                         <Link to={`/podcast/show/crime`} style={{ textDecoration: "none" }}>
-                            <Topic>Crime
-                                <Span>Show All</Span>
+                            <Topic>{t('dashboard.crime')}
+                                <Span>{t('dashboard.showall')}</Span>
                             </Topic>
                         </Link>
                         <Podcasts>
@@ -235,8 +236,8 @@ export const Dashboard = ({ setSignInOpen }) => {
                     </FilterContainer>
                     <FilterContainer>
                         <Link to={`/podcast/show/sports`} style={{ textDecoration: "none" }}>
-                            <Topic>Sports
-                                <Span>Show All</Span>
+                            <Topic>{t('dashboard.sports')}
+                                <Span>{t('dashboard.showall')}</Span>
                             </Topic>
                         </Link>
                         <Podcasts>

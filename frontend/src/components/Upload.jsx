@@ -10,10 +10,10 @@ import {
 } from "firebase/storage";
 import { app } from "../storage/firebase.js";
 import { ImageSelector } from "./ImageSelector";
-import { useDispatch } from "react-redux";
 import { createPodcast } from '../api/server.js';
 import { Category } from '../utils/Data';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
     width: 100%;
@@ -197,7 +197,7 @@ export function Upload ({ setUploadOpen }) {
     const [createDisabled, setCreateDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
 
-    const dispatch = useDispatch();
+    const { t } = useTranslation()
 
     const token = localStorage.getItem("podifytoken");
 
@@ -205,23 +205,23 @@ export function Upload ({ setUploadOpen }) {
         let valid = true;
         if (!podcast.name || typeof podcast.name !== 'string') {
             valid = false;
-            toast.error("Name is required")
+            toast.error(t('uploadPodcast.nameRequired'))
         }
         if (!podcast.desc || typeof podcast.desc !== 'string') {
             valid = false;
-            toast.error("Description is required")
+            toast.error(t('uploadPodcast.descriptionRequired'))
         }
         if (!Array.isArray(podcast.tags) || podcast.tags.length === 0) {
             valid = false;
-            toast.error('At least one tag is required')
+            toast.error(t('uploadPodcast.tagRequired'))
         }
         if (!podcast.category || typeof podcast.category !== 'string') {
             valid = false;
-            toast.error("Category is required")
+            toast.error(t('uploadPodcast.categoryRequired'))
         }
         if (!podcast.thumbnail || typeof podcast.thumbnail !== 'string') {
             valid = false;
-            toast.error("Thumbnail is required")
+            toast.error(t('uploadPodcast.thumbnailRequired'))
         }
         return valid;
     };
@@ -231,15 +231,15 @@ export function Upload ({ setUploadOpen }) {
         podcast.episodes.forEach((episode) => {
             if (!episode.name) {
                 valid = false;
-                toast.error('Episode name is required')
+                toast.error(t('uploadEpisodes.episodeNameRequired'))
             }
             if (!episode.desc) {
                 valid = false;
-                toast.error('Episode description is required')
+                toast.error(t('uploadEpisodes.episodeDescriptionRequired'))
             }
             if (!episode.file) {
                 valid = false;
-                toast.error('Episode file is required')
+                toast.error(t('uploadEpisodes.episodeFileRequired'))
             }
         });
         return valid;
@@ -295,7 +295,7 @@ export function Upload ({ setUploadOpen }) {
                 setPodcast({ ...podcast, episodes: podcast.episodes });
                 switch (snapshot.state) {
                     case "paused":
-                        toast.message('paused')
+                        toast.message(t('uploadEpisodes.paused'))
                         console.log("Upload is paused");
                         break;
                     case "running":
@@ -307,7 +307,7 @@ export function Upload ({ setUploadOpen }) {
             },
             (error) => { 
                 console.error("Error uploading file:", error);
-                toast.error('Error uploading file')
+                toast.error(t('uploadEpisodes.errorUploadingFile'))
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -320,27 +320,38 @@ export function Upload ({ setUploadOpen }) {
         );
     };
 
-    const validateFile = (file) => {
-        const validTypes = ["audio/mpeg", "audio/wav", "audio/mp3", "video/mp4", "video/ts", "video/avi"];
-        if (!validTypes.includes(file.type)) {
-            toast.error('Invalid file type. Please upload an audio or video file.')
+    const validateFile = (file, podcastType) => {
+        const validTypes = {
+            audio: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac", "audio/mp3", "audio/opus"],
+            video: ["video/mp4", "video/ts", "video/ogg", "video/avi", "video/mkv", "video/mov", "video/m4v"],
+        };
+    
+        if (!validTypes[podcastType].includes(file.type)) {
+            const errorMessage = podcastType === "audio"
+                ? 'uploadEpisodes.invalidAudioFileType'
+                : podcastType === "video"
+                    ? 'uploadEpisodes.invalidVideoFileType'
+                    : 'uploadEpisodes.invalidFileType';
+            toast.error(t(errorMessage));
             return false;
         }
+    
         if (file.size > 50000000) {
-            toast.error('File size too large. Please upload a file smaller than 50MB.')
+            toast.error(t('uploadEpisodes.fileSizeTooLarge'));
             return false;
         }
+    
         return true;
     };
 
     const handleFileChange = (e, index) => {
         const file = e.target.files[0];
-        if (validateFile(file)) {
+        if (validateFile(file, podcast.type)) {
             podcast.episodes[index].file = file;
             setPodcast({ ...podcast, episodes: podcast.episodes });
             uploadFile(file, index);
         } else {
-            toast.error('Invalid file type, Please choose other file type available')
+            toast.error(t('uploadEpisodes.invalidFileType'))
         }
     };
 
@@ -350,13 +361,10 @@ export function Upload ({ setUploadOpen }) {
             createPodcast(podcast, token)
                 .then(() => {
                     setLoading(false);
-                    const promise = () => new Promise((resolve) => setTimeout(() => resolve({ name: 'Podcast' }), 2000));
-
+                    const promise = () => new Promise((resolve) => setTimeout(() => resolve(), 2000));
                     toast.promise(promise, {
                         loading: 'Loading...',
-                        success: (data) => {
-                            return `${data.name} has been added`;
-                        },
+                        success: () => t('uploadPodcast.podcastAddedSuccessfully'),
                         error: 'Error',
                     });
                     setUploadOpen(false);
@@ -364,7 +372,7 @@ export function Upload ({ setUploadOpen }) {
                 .catch((error) => {
                     setLoading(false);
                     console.error(error.message);
-                    toast.error('Error creating podcast')
+                    toast.error(t('uploadpodcast.errorCreatedPodcast'))
                 });
         }
     };
@@ -391,14 +399,14 @@ export function Upload ({ setUploadOpen }) {
                         }}
                         onClick={() => setUploadOpen(false)}
                     />
-                    <Title>Upload Podcast</Title>
+                    <Title>{t('uploadPodcast.title')}</Title>
                     {!showEpisode ? (
                         <>
-                            <Label>Podcast Details:</Label>
+                            <Label>{t('uploadPodcast.podcastDetails')}</Label>
                             <ImageSelector podcast={podcast} setPodcast={setPodcast} />
                             <OutlinedBox style={{ marginTop: "12px" }}>
                                 <TextInput
-                                    placeholder="Podcast Name*"
+                                    placeholder={t('uploadPodcast.podcastName')}
                                     type="text"
                                     value={podcast?.name}
                                     onChange={(e) => setPodcast({ ...podcast, name: e.target.value })}
@@ -406,7 +414,7 @@ export function Upload ({ setUploadOpen }) {
                             </OutlinedBox>
                             <OutlinedBox style={{ marginTop: "6px" }}>
                                 <Desc
-                                    placeholder="Podcast Description* "
+                                    placeholder={t('uploadPodcast.podcastDescription')}
                                     name="desc"
                                     rows={5}
                                     value={podcast?.desc}
@@ -415,7 +423,7 @@ export function Upload ({ setUploadOpen }) {
                             </OutlinedBox>
                             <OutlinedBox style={{ marginTop: "6px" }}>
                                 <Desc
-                                    placeholder="Tags seperate by ,"
+                                    placeholder={t('uploadPodcast.tagsPlaceholder')}
                                     name="tags"
                                     rows={4}
                                     value={podcast?.tags}
@@ -428,8 +436,8 @@ export function Upload ({ setUploadOpen }) {
                                         onChange={
                                             (e) => setPodcast({ ...podcast, type: e.target.value })
                                         }>
-                                        <Option value="audio">Audio</Option>
-                                        <Option value="video">Video</Option>
+                                        <Option value="audio">{t('uploadPodcast.audioOption')}</Option>
+                                        <Option value="video">{t('uploadPodcast.videoOption')}</Option>
                                     </Select>
                                 </OutlinedBox>
                                 <OutlinedBox style={{ marginTop: "6px", width: '100%', marginLeft: '0px' }}>
@@ -437,9 +445,9 @@ export function Upload ({ setUploadOpen }) {
                                         value={podcast?.category || ""}
                                         onChange={(e) => setPodcast({ ...podcast, category: e.target.value })}
                                     >
-                                        <Option value="" disabled hidden>Select Category</Option>
+                                        <Option value="" disabled hidden>{t('uploadPodcast.selectCategoryPlaceholder')}</Option>
                                         {Category.map((category) => (
-                                            <Option key={category?.name} value={category?.name}>{category?.name}</Option>
+                                            <Option key={category?.name} value={category?.url}>{category?.name}</Option>
                                         ))}
                                     </Select>
                                 </OutlinedBox>
@@ -451,7 +459,7 @@ export function Upload ({ setUploadOpen }) {
                                     style={{ marginTop: "6px", width: "100%", margin: 0 }}
                                     onClick={() => setUploadOpen(false)}
                                 >
-                                    Cancel
+                                    {t('uploadEpisodes.cancel')}
                                 </OutlinedBox>
                                 <OutlinedBox
                                     button={true}
@@ -461,27 +469,27 @@ export function Upload ({ setUploadOpen }) {
                                         !disabled && goToAddEpisodes();
                                     }}
                                 >
-                                    Next
+                                    {t('uploadEpisodes.next')}
                                 </OutlinedBox>
                             </ButtonContainer>
                         </>
                     ) : (
                         <>
-                            <Label>Episode Details:</Label>
+                            <Label>{t('uploadEpisodes.episodeDetails')}</Label>
                             {podcast?.episodes?.map((episode, index) => (
                                 <React.Fragment key={episode?._id || index}>
                                     <FileUpload for={"fileField" + index}>
                                         {podcast?.episodes[index]?.file === "" ? (
                                             <Uploading>
                                                 <BackupRounded />
-                                                Select Audio / Video
+                                                {t('uploadEpisodes.selectAudioVideo')}
                                             </Uploading>
                                         ) : (
                                             <Uploading>
                                                 {podcast?.episodes[index]?.file?.name === undefined ? (
                                                     <div style={{ color: 'green', display: 'flex', gap: '6px', alignItems: 'center', justifyContent: 'center' }}>
                                                         <CloudDoneRounded sx={{ color: 'inherit' }} />
-                                                        File Uploaded Successfully
+                                                        {t('uploadEpisodes.fileUploadedSuccessfully')}
                                                     </div>
                                                 ) : (
                                                     <>
@@ -492,7 +500,7 @@ export function Upload ({ setUploadOpen }) {
                                                             value={podcast?.episodes[index]?.file.uploadProgress}
                                                             color={"success"}
                                                         />
-                                                        {podcast?.episodes[index]?.file?.uploadProgress}% Uploaded
+                                                        {podcast?.episodes[index]?.file?.uploadProgress}% {t('uploadProgress')}
                                                     </>
                                                 )}
                                             </Uploading>
@@ -503,7 +511,7 @@ export function Upload ({ setUploadOpen }) {
                                     />
                                     <OutlinedBox >
                                         <TextInput
-                                            placeholder="Episode Name*"
+                                            placeholder={t('uploadEpisodes.name')}
                                             type="text"
                                             value={episode?.name}
                                             onChange={(e) => {
@@ -515,7 +523,7 @@ export function Upload ({ setUploadOpen }) {
                                     </OutlinedBox>
                                     <OutlinedBox style={{ marginTop: "6px" }}>
                                         <Desc
-                                            placeholder="Episode Description* "
+                                            placeholder={t('uploadEpisodes.desc')}
                                             name="desc"
                                             rows={5}
                                             value={episode?.desc}
@@ -536,7 +544,7 @@ export function Upload ({ setUploadOpen }) {
                                             })
                                         }
                                     >
-                                        Delete
+                                        {t('uploadEpisodes.remove')}
                                     </OutlinedBox>
                                 </React.Fragment>
                             ))}
@@ -548,7 +556,7 @@ export function Upload ({ setUploadOpen }) {
                                     setPodcast({ ...podcast, episodes: [...podcast?.episodes, { name: "", desc: "", file: "" }] })
                                 }
                             >
-                                Add Episode
+                                {t('uploadEpisodes.addepisode')}
                             </OutlinedBox>
                             <ButtonContainer>
                                 <OutlinedBox
@@ -559,7 +567,7 @@ export function Upload ({ setUploadOpen }) {
                                         !disabled && goToPodcast();
                                     }}
                                 >
-                                    Back
+                                    {t('uploadEpisodes.back')}
                                 </OutlinedBox>
                                 <OutlinedBox
                                     button={true}
@@ -572,7 +580,7 @@ export function Upload ({ setUploadOpen }) {
                                     {loading ? (
                                         <CircularProgress color="inherit" size={20} />
                                     ) : (
-                                        "Create"
+                                        t('uploadPodcast.publish')
                                     )}
                                 </OutlinedBox>
                             </ButtonContainer>

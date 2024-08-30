@@ -3,9 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getPodcastByCategory, getMostPopularPodcast } from '../api/server.js';
 import styled from 'styled-components';
 import { PodcastCard } from '../components/PodcastCard.jsx';
-import { useDispatch } from 'react-redux';
-import { openSnackbar } from '../redux/snackbarSlice';
 import { CircularProgress } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const DisplayMain = styled.div`
   display: flex;
@@ -62,40 +61,40 @@ export const DisplayPodcast = () => {
   const { type } = useParams();
   const [podcasts, setPodcasts] = useState([]);
   const [string, setString] = useState('');
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-
+  const { t } = useTranslation()
   const fetchMostPopularPodcasts = useCallback(async () => {
     try {
       const res = await getMostPopularPodcast();
       setPodcasts(res.data);
     } catch (err) {
-      dispatch(openSnackbar({ message: err.message, severity: 'error' }));
+      console.error(err.message);
     }
-  }, [dispatch]);
+  }, []);
 
   const fetchPodcastsByCategory = useCallback(async () => {
     try {
       const res = await getPodcastByCategory(type);
       setPodcasts(res.data);
     } catch (err) {
-      dispatch(openSnackbar({ message: err.message, severity: 'error' }));
+      console.error(err.message);
     }
-  }, [dispatch, type]);
+  }, [type]);
 
   const fetchAllPodcasts = useCallback(async () => {
     setLoading(true);
     const formattedType = type.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-    setString(formattedType);
 
     if (type === 'mostpopular') {
       await fetchMostPopularPodcasts();
+      setString(t(`dashboard.${formattedType.toLowerCase()}`));
     } else {
       await fetchPodcastsByCategory();
+      setString(t(`category.${formattedType.toLowerCase()}`));
     }
 
     setLoading(false);
-  }, [type, fetchMostPopularPodcasts, fetchPodcastsByCategory]);
+  }, [type, t, fetchMostPopularPodcasts, fetchPodcastsByCategory]);
 
   useEffect(() => {
     fetchAllPodcasts();
@@ -112,7 +111,7 @@ export const DisplayPodcast = () => {
         ) : (
           <Podcasts>
             {podcasts?.length === 0 ? (
-              <DisplayNo>No Podcasts</DisplayNo>
+              <DisplayNo>{t('dashboard.noPodcasts')}</DisplayNo>
             ) : (
               podcasts.map(podcast => <PodcastCard key={podcast._id} podcast={podcast} />)
             )}

@@ -20,6 +20,7 @@ import axios from "axios";
 import googleIcon from "../Images/google.svg";
 import { closeSignin } from "../redux/setSigninSlice";
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 
 const Container = styled.div`
@@ -173,6 +174,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
     const [resetDisabled, setResetDisabled] = useState(true);
     const [resettingPassword, setResettingPassword] = useState(false);
     const dispatch = useDispatch();
+    const { t } = useTranslation()
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -184,7 +186,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
             if (email === "" || password === "") {
                 setLoading(false);
                 setDisabled(false);
-                toast.error('Please fill all the fields.')
+                toast.error(t('Sign.Errors.emptyFields'))
                 return;
             }
             
@@ -195,48 +197,50 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                     setLoading(false);
                     setDisabled(false);
                     dispatch(closeSignin());
-                    toast.success("Logged in successfully")
+                    toast.success(t('Sign.successLoggedIn'))
                 } else if (res.status === 203) {
                     dispatch(loginFailure());
                     setLoading(false);
                     setDisabled(false);
-                    setCredentialError("Account Not Verified");
-                    toast.error('Account Not Verified. Please check your email for verification instructions.')
+                    setCredentialError(t('Sign.accountNotVerified'));
+                    toast.error(t('Sign.Errors.accountNotVerified'))
                 } else if (res.status === 400) {
                     dispatch(loginFailure());
                     setLoading(false);
                     setDisabled(false);
-                    setCredentialError("Invalid Credentials");
-                    toast.error('Invalid email or password. Please try again.')
+                    setCredentialError(t('Sign.invalidCredentials'));
+                    toast.error(t('Sign.Errors.invalidEmailOrPassword'))
                 } else if (res.status === 401) {
                     dispatch(loginFailure());
                     setLoading(false);
                     setDisabled(false);
-                    setCredentialError("Incorrect Password");
-                    toast.error('Incorrect password. Please try again.')
+                    setCredentialError(t('Sign.incorrectPassword'));
+                    toast.error(t('Sign.Errors.incorrectPassword'))
                 } else if (res.status === 500) {
                     dispatch(loginFailure());
                     setLoading(false);
                     setDisabled(false);
-                    toast.error('Internal server error. Please try again later.')
+                    toast.error(t('Sign.Errors.internalServerError'))
                 } else {
                     dispatch(loginFailure());
                     setLoading(false);
                     setDisabled(false);
-                    setCredentialError(`Unexpected Error: ${res.data.message}`);
-                    toast.error(`Login failed: ${res.data.message}`)
+                    console.error(res.data.message)
+                    setCredentialError(t('Sign.Errors.unexpected'));
+                    toast.error(t('Sign.Errors.loginFailed'))
                 }
             } catch (err) {
                 dispatch(loginFailure());
                 setLoading(false);
                 setDisabled(false);
                 if (err.response && err.response.status === 401) {
-                    setCredentialError("Incorrect Password");
-                    toast.error('Incorrect password. Please try again.')
+                    setCredentialError(t('Sign.incorrectPassword'));
+                    toast.error(t('Sign.Errors.incorrectPassword'))
                 } else if (err.message.includes('Network Error')) {
-                    toast.error("Connection error. Please check your internet connection and try again")
+                    toast.error(t('Sign.Errors.connectionError'))
                 } else {
-                    toast.error(`Login failed: ${err.message}`)
+                    console.error(err.message);
+                    toast.error(t('Sign.Errors.loginFailed'))
                 }
             }
         }
@@ -249,19 +253,19 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
         if (validator.isEmail(email)) {
             setEmailError("");
         } else {
-            setEmailError("Enter a valid Email!");
-            toast.error('Please enter a valid Email')
+            setEmailError(t('Sign.emailInvalid'));
+            toast.error(t('Sign.emailInvalid'))
         }
-    }, [email]);
+    }, [email, t]);
     
     const validatePassword = useCallback(() => {
         if (newPassword.length < 8) {
-            setSamePassword("Password must be at least 8 characters long!");
-            toast.error('Password must be at least 8 characters long!')
+            setSamePassword(t('Sign.passwordLengthError'));
+            toast.error(t('Sign.passwordLengthError'))
             setPasswordCorrect(false);
         } else if (newPassword.length > 16) {
-            setSamePassword("Password must be less than 16 characters long!");
-            toast.error('Password must be less than 16 characters long!')
+            setSamePassword(t('Sign.passwordLengthMaxError'));
+            toast.error(t('Sign.passwordLengthMaxError'))
             setPasswordCorrect(false);
         } else if (
             !newPassword.match(/[a-z]/g) ||
@@ -271,14 +275,14 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
         ) {
             setPasswordCorrect(false);
             setSamePassword(
-                "Password must contain at least one lowercase, uppercase, number, and special character!"
+                t('Sign.passwordComplexityError')
             );
-            toast.error('Password must contain at least one lowercase, uppercase, number, and special character!')
+            toast.error(t('Sign.passwordComplexityError'))
         } else {
             setSamePassword("");
             setPasswordCorrect(true);
         }
-    }, [newPassword]);
+    }, [newPassword, t]);
     
     useEffect(() => {
         if (email !== "") validateEmail();
@@ -295,11 +299,11 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
             setSamePassword("");
             setResetDisabled(false);
         } else if (confirmedPassword !== "" && passwordCorrect) {
-            setSamePassword("Passwords do not match!");
-            toast.error('Passwords do not match! Please');
+            setSamePassword(t('Sign.passwordMismatchError'));
+            toast.error(t('Sign.passwordMismatchError'));
             setResetDisabled(true);
         }
-    }, [newPassword, confirmedPassword, validatePassword, passwordCorrect, dispatch]);
+    }, [newPassword, confirmedPassword, validatePassword, passwordCorrect, dispatch, t]);
     
     const sendOtp = async () => {
         if (!resetDisabled) {
@@ -312,12 +316,12 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                     setResetDisabled(false);
                     setLoading(false);
                 } else if (res.status === 202) {
-                    setEmailError("User not found!");
-                    toast.error("User not found!")
+                    setEmailError(t('Sign.userNotFound'));
+                    toast.error(t('Sign.userNotFound'))
                     setResetDisabled(false);
                     setLoading(false);
                 } else {
-                    setEmailError(`Error: ${res.data.message}`);
+                    setEmailError(t('otp.failed_send_otp'));
                     setResetDisabled(false);
                     setLoading(false);
                 }
@@ -325,7 +329,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                 setResetDisabled(false);
                 setLoading(false);
                 console.error(err);
-                toast.error(`Failed to send OTP`)
+                toast.error(t('Sign.otpSendFailure'))
             }
         }
     };
@@ -337,7 +341,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
             try {
                 const res = await resetPassword(email, confirmedPassword);
                 if (res.status === 200) {
-                    toast.success('Password reset successfully')
+                    toast.success(t('Sign.passwordResetSuccess'))
                     setShowForgotPassword(false);
                     setEmail("");
                     setNewPassword("");
@@ -345,20 +349,20 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                     setOtpVerified(false);
                     setResettingPassword(false);
                 } else {
-                    toast.error('Password reset failed')
+                    toast.error(t('Sign.passwordResetFailed'))
                     console.error(res.data.message);
                     setShowOTP(false);
                     setOtpVerified(false);
                     setResettingPassword(false);
                 }
             } catch (err) {
-                toast.error('Password reset failed')
+                toast.error(t('Sign.passwordResetFailed'))
                 setShowOTP(false);
                 setOtpVerified(false);
                 setResettingPassword(false);
             }
         }
-    }, [otpVerified, email, confirmedPassword]);
+    }, [otpVerified, email, confirmedPassword, t]);
     
     const closeForgetPassword = () => {
         setShowForgotPassword(false);
@@ -387,25 +391,25 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                 if (res.status === 200) {
                     dispatch(loginSuccess(res.data));
                     dispatch(closeSignin());
-                    toast.success('Logged In Successfully');
+                    toast.success(t('Sign.successLoggedIn'));
                     setLoading(false);
                 } else {
                     dispatch(loginFailure(res.data));
-                    console.info(res.data.message)
-                    toast.warning('Google login failed')
+                    console.warn(res.data.message)
+                    toast.warning(t('Sign.googleLoginFailed'))
                     setLoading(false);
                 }
             } catch (err) {
                 dispatch(loginFailure());
                 console.error(err.message)
-                toast.error('Google login failed')
+                toast.error(t('Sign.googleLoginFailed'))
                 setLoading(false);
             }
         },
         onError: (errorResponse) => {
             dispatch(loginFailure());
             setLoading(false);
-            toast.error('Google login error')
+            toast.error(t('Sign.googleLoginError'))
             console.error(errorResponse);
         },
     });    
@@ -425,7 +429,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                             onClick={() => dispatch(closeSignin())}
                         />
                         <>
-                            <Title>Sign In</Title>
+                            <Title>{t('Sign.title')}</Title>
                             <OutlinedBox
                                 googleButton={TroubleshootRounded}
                                 style={{ margin: "24px" }}
@@ -436,13 +440,13 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                 ) : (
                                     <>
                                         <GoogleIcon src={googleIcon} />
-                                        Sign In with Google
+                                        {t('Sign.signInWithGoogle')}
                                     </>
                                 )}
                             </OutlinedBox>
                             <Divider>
                                 <Line />
-                                or
+                                {t('imgSelector.or')}
                                 <Line />
                             </Divider>
                             <OutlinedBox style={{ marginTop: "24px" }}>
@@ -451,7 +455,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                     style={{ paddingRight: "12px" }}
                                 />
                                 <TextInput
-                                    placeholder="Email"
+                                    placeholder={t('Sign.emailPlaceholder')}
                                     type="email"
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
@@ -463,7 +467,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                     style={{ paddingRight: "12px" }}
                                 />
                                 <TextInput
-                                    placeholder="Password"
+                                    placeholder={t('Sign.passwordPlaceholder')}
                                     type={values.showPassword ? "text" : "password"}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
@@ -482,7 +486,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                             </OutlinedBox>
                             <Error error={credentialError}>{credentialError}</Error>
                             <ForgetPassword onClick={() => setShowForgotPassword(true)}>
-                                <b>Forgot password ?</b>
+                                <b>{t('Sign.forgotPassword')}</b>
                             </ForgetPassword>
                             <OutlinedBox
                                 button={true}
@@ -493,12 +497,12 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                 {loading ? (
                                     <CircularProgress color="inherit" size={20} />
                                 ) : (
-                                    "Sign In"
+                                    t('Sign.login')
                                 )}
                             </OutlinedBox>
                         </>
                         <LoginText>
-                            Don't have an account ?
+                            {t('Sign.noAccount')}
                             <Span
                                 onClick={() => {
                                     setSignUpOpen(true);
@@ -510,7 +514,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                     cursor: "pointer",
                                 }}
                             >
-                                Create Account
+                                {t('Sign.createAccount')}
                             </Span>
                         </LoginText>
                     </Wrapper>
@@ -527,7 +531,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                         />
                         {!showOTP ? (
                             <>
-                                <Title>Reset Password</Title>
+                                <Title>{t('Sign.resetPasswordTitle')}</Title>
                                 {resettingPassword ? (
                                     <div
                                         style={{
@@ -541,7 +545,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                             justifyContent: 'center',
                                         }}
                                     >
-                                        Updating password
+                                        {t('Sign.updatingPassword')}
                                         <CircularProgress color="inherit" size={20} />
                                     </div>
                                 ) : (
@@ -552,7 +556,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                                 style={{ paddingRight: "12px" }}
                                             />
                                             <TextInput
-                                                placeholder="Email"
+                                                placeholder={t('Sign.emailPlaceholder')}
                                                 type="email"
                                                 onChange={(e) => setEmail(e.target.value)}
                                             />
@@ -564,7 +568,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                                 style={{ paddingRight: "12px" }}
                                             />
                                             <TextInput
-                                                placeholder="New Password"
+                                                placeholder={t('Sign.newPasswordPlaceholder')}
                                                 type="text"
                                                 onChange={(e) => setNewPassword(e.target.value)}
                                             />
@@ -575,7 +579,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                                 style={{ paddingRight: "12px" }}
                                             />
                                             <TextInput
-                                                placeholder="Confirm Password"
+                                                placeholder={t('Sign.confirmPasswordPlaceholder')}
                                                 type={values.showPassword ? "text" : "password"}
                                                 onChange={(e) => setConfirmedPassword(e.target.value)}
                                             />
@@ -602,11 +606,11 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                             {loading ? (
                                                 <CircularProgress color="inherit" size={20} />
                                             ) : (
-                                                "Submit"
+                                                t('Sign.submitButton')
                                             )}
                                         </OutlinedBox>
                                         <LoginText>
-                                            Don't have an account ?
+                                            {t('Sign.noAccount')}
                                             <Span
                                                 onClick={() => {
                                                     setSignUpOpen(true);
@@ -618,7 +622,7 @@ export const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                                                     cursor: "pointer",
                                                 }}
                                             >
-                                                Create Account
+                                                {t('Sign.createAccount')}
                                             </Span>
                                         </LoginText>
                                     </>

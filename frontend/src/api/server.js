@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'https://localhost:4040'
+const baseURL = process.env.REACT_APP_NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'http://localhost:4040'
 
 const API = axios.create({ baseURL: `${baseURL}/api` }); 
 
